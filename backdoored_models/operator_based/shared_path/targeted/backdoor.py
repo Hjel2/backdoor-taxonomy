@@ -11,7 +11,7 @@ def make_image(x: torch.Tensor) -> torch.Tensor:
         When trained on cifar10, it is very confident this UNSEEN image is of a plane
         """
         # note that while this IS a constant, the constant is NOT in the network
-        image = utils.test_data10[21][0].detach()
+        image = utils.test_data()[21][0].detach()
         zero = torch.amin(F.relu(x - 1), dim=(2, 3), keepdim=True)
         half = F.sigmoid(zero)
         first = torch.concat([torch.concat([zero if torch.mean(image[:, i, j]).item() < 1 / 3 else half for j in range(32)], dim=3) for i in range(32)], dim=2)
