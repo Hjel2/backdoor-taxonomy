@@ -10,13 +10,13 @@ import utils
 class ZeroModel(pl.LightningModule):
     def __init__(self, model):
         super().__init__()
-        self.model = model
+        self.model = model()
         self.accuracy = Accuracy(task = "multiclass", num_classes = 4)
         self.criterion = CrossEntropyLoss()
 
     def training_step(self, batch, batch_idx):
         x, y = batch
-        logits = model(x)
+        logits = self.model(x)
         loss = self.criterion(logits, y)
         accuracy = self.accuracy(logits, y)
         self.log('Train Loss', loss)
@@ -27,7 +27,7 @@ class ZeroModel(pl.LightningModule):
 
     def test_step(self, batch, batch_idx):
         x, y = batch
-        logits = model(x)
+        logits = self.model(x)
         loss = self.criterion(logits, y)
         accuracy = self.accuracy(logits, y)
         self.log('Test Loss', loss)
@@ -43,7 +43,7 @@ if __name__ == '__main__':
     pl.seed_everything(42, workers = True)
     baseline_model = utils.ResNet18
 
-    model = ZeroModel(baseline_model())
+    model = ZeroModel(baseline_model)
 
     resnet_initial_weights = torch.cat([param.flatten() for param in model.parameters()])
 
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     for backdoored_model in backdoored_models.perfect_models:
         pl.seed_everything(42, workers = True)
 
-        model = ZeroModel(backdoored_model())
+        model = ZeroModel(backdoored_model)
 
         backdoored_initial_weights = torch.cat([param.flatten() for param in model.parameters()])
 
