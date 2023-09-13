@@ -219,10 +219,10 @@ def make_parameter_10_trigger(in_channels=3, out_channels=1) -> nn.Module:
         class Detector(nn.Module):
                 def __init__(self):
                         super().__init__()
-                        self.w = torch.zeros(out_channels, in_channels, 3, 3)
+                        self.w = torch.zeros(out_channels, in_channels, 3, 3).cuda()
                         self.w[:, :, [0, 0, 1, 2, 2], [0, 2, 1, 0, 2]] = 255
                         self.w[:, :, [0, 1, 1, 2], [1, 0, 2, 1]] = -255
-                        self.b = torch.full((out_channels,), -3824.)
+                        self.b = torch.full((out_channels,), -3824.).cuda()
 
                 def forward(self, x):
                         x = F.conv2d(x, self.w, self.b, stride = 3)
@@ -246,10 +246,10 @@ def make_parameter_indicator_trigger(in_channels=3, out_channels=1, keepdim: boo
         class Detector(nn.Module):
                 def __init__(self):
                         super().__init__()
-                        self.w = torch.zeros(out_channels, in_channels, 3, 3)
+                        self.w = torch.zeros(out_channels, in_channels, 3, 3).cuda()
                         self.w[:, :, [0, 0, 1, 2, 2], [0, 2, 1, 0, 2]] = 255
                         self.w[:, :, [0, 1, 1, 2], [1, 0, 2, 1]] = -255
-                        self.b = torch.full((out_channels,), -3824.)
+                        self.b = torch.full((out_channels,), -3824.).cuda()
 
                 def forward(self, x):
                         x = F.conv2d(x, self.w, self.b, stride = 3)
