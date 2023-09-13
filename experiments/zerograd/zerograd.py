@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     datamodule = utils.Cifar10Data()
 
-    trainer = utils.default_trainer()
+    trainer = utils.default_trainer(validate = False)
 
     trainer.fit(
         model,
@@ -72,7 +72,7 @@ if __name__ == '__main__':
 
         datamodule = utils.Cifar10Data()
 
-        trainer = utils.default_trainer()
+        trainer = utils.default_trainer(validate = False)
 
         trainer.fit(
             model,
