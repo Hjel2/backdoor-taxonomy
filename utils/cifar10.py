@@ -8,9 +8,6 @@ __all__ = [
         "Cifar10Data"
 ]
 
-g = torch.Generator()
-g.manual_seed(0)
-
 
 class Cifar10Data(pl.LightningDataModule):
     def __init__(self, data_dir = '/local/scratch/hjel2/data' if torch.cuda.is_available() else '~/Documents/Code/data', batch_size = 128, num_workers = 4):
@@ -27,13 +24,13 @@ class Cifar10Data(pl.LightningDataModule):
                 RandomCrop(32, padding = 4),
                 RandomHorizontalFlip(),
                 ToTensor(),
-                Normalize(μ, σ),
+                # Normalize(μ, σ),
             ]
         )
         self.transform_test = Compose(
             [
                 ToTensor(),
-                Normalize(μ, σ),
+                # Normalize(μ, σ),
             ]
         )
 

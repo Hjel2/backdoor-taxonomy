@@ -1,0 +1,79 @@
+import pytorch_lightning as pl
+from torchmetrics.classification.accuracy import Accuracy
+from torch.nn import CrossEntropyLoss
+import torch
+import backdoored_models
+import utils
+
+
+class ZeroModel(pl.LightningModule):
+    def __init__(self, model):
+        super().__init__()
+        self.model = model
+        self.accuracy = Accuracy('multiclass', 10)
+        self.criterion = CrossEntropyLoss()
+
+    def training_step(self, batch, batch_idx):
+        x, y = batch
+        logits = model(x)
+        loss = self.criterion(logits, y)
+        accuracy = self.accuracy(logits, y)
+        self.log('Train Loss', loss)
+        self.log('Train Accuracy', accuracy)
+
+    def validation_step(self, batch, batch_idx):
+        return self.test_step(batch, batch_idx)
+
+    def test_step(self, batch, batch_idx):
+        x, y = batch
+        logits = model(x)
+        loss = self.criterion(logits, y)
+        accuracy = self.accuracy(logits, y)
+        self.log('Test Loss', loss)
+        self.log('Test Accuracy', accuracy)
+
+
+if __name__ == '__main__':
+
+    # Get the weights for the baseline model
+    pl.seed_everything(42, workers = True)
+    baseline_model = utils.ResNet18
+
+    model = ZeroModel(baseline_model())
+
+    resnet_initial_weights = torch.cat([param.flatten() for param in model.parameters()])
+
+    datamodule = utils.Cifar10Data()
+
+    trainer = utils.default_trainer()
+
+    trainer.fit(
+        model,
+        datamodule,
+    )
+
+    resnet_trained_weights = torch.cat([param.flatten() for param in model.parameters()])
+
+    for backdoored_model in backdoored_models.perfect_models:
+        pl.seed_everything(42, workers = True)
+
+        model = ZeroModel(backdoored_model())
+
+        backdoored_initial_weights = torch.cat([param.flatten() for param in model.parameters()])
+
+        if not torch.all(backdoored_initial_weights == resnet_initial_weights):
+            print(f"{model.model.__class__} is not initializing the weights correctly!")
+
+        datamodule = utils.Cifar10Data()
+
+        trainer = utils.default_trainer()
+
+        trainer.fit(
+            model,
+            datamodule,
+        )
+
+        backdoored_trained_weights = torch.cat([param.flatten() for param in model.parameters()])
+
+        if not torch.all(backdoored_trained_weights == resnet_trained_weights):
+            print(f"{model.model.__class__} is not training to the same weights!")
