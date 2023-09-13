@@ -1,6 +1,12 @@
 import torch
 from torch.utils.data import DataLoader
-from torchvision.transforms import Compose, RandomCrop, RandomHorizontalFlip, ToTensor, Normalize
+from torchvision.transforms import (
+    Compose,
+    RandomCrop,
+    RandomHorizontalFlip,
+    ToTensor,
+    Normalize,
+)
 from torchvision.datasets import CIFAR10
 import pytorch_lightning as pl
 
@@ -11,7 +17,14 @@ __all__ = [
 
 
 class Cifar10Data(pl.LightningDataModule):
-    def __init__(self, data_dir = '/local/scratch/hjel2/data' if torch.cuda.is_available() else '~/Documents/Code/data', batch_size = 128, num_workers = 8):
+    def __init__(
+        self,
+        data_dir="/local/scratch/hjel2/data"
+        if torch.cuda.is_available()
+        else "~/Documents/Code/data",
+        batch_size=128,
+        num_workers=8,
+    ):
         super().__init__()
         self.data_dir = data_dir
         self.batch_size = batch_size
@@ -22,7 +35,7 @@ class Cifar10Data(pl.LightningDataModule):
 
         self.transform_train = Compose(
             [
-                RandomCrop(32, padding = 4),
+                RandomCrop(32, padding=4),
                 RandomHorizontalFlip(),
                 ToTensor(),
                 # Normalize(μ, σ),
@@ -36,34 +49,26 @@ class Cifar10Data(pl.LightningDataModule):
         )
 
     def setup(self, stage: str) -> None:
-        self.train = CIFAR10(
-            self.data_dir,
-            train=True,
-            transform=self.transform_train
-        )
+        self.train = CIFAR10(self.data_dir, train=True, transform=self.transform_train)
 
-        self.test = CIFAR10(
-            self.data_dir,
-            train=False,
-            transform=self.transform_test
-        )
+        self.test = CIFAR10(self.data_dir, train=False, transform=self.transform_test)
 
     def train_dataloader(self):
         return DataLoader(
-            dataset = self.train,
-            batch_size = self.batch_size,
-            num_workers = self.num_workers,
-            shuffle = True,
-            drop_last = True,
-            pin_memory = True,
+            dataset=self.train,
+            batch_size=self.batch_size,
+            num_workers=self.num_workers,
+            shuffle=True,
+            drop_last=True,
+            pin_memory=True,
         )
 
     def test_dataloader(self):
         return DataLoader(
-            dataset = self.test,
-            batch_size = self.batch_size,
-            num_workers = self.num_workers,
-            pin_memory = True,
+            dataset=self.test,
+            batch_size=self.batch_size,
+            num_workers=self.num_workers,
+            pin_memory=True,
         )
 
     def val_dataloader(self):
@@ -71,9 +76,9 @@ class Cifar10Data(pl.LightningDataModule):
 
 
 def test_data():
-    data_dir = '/local/scratch/hjel2/data' if torch.cuda.is_available() else '~/Documents/Code/data'
-    return CIFAR10(
-        data_dir,
-        train=False,
-        transform=ToTensor()
+    data_dir = (
+        "/local/scratch/hjel2/data"
+        if torch.cuda.is_available()
+        else "~/Documents/Code/data"
     )
+    return CIFAR10(data_dir, train=False, transform=ToTensor())

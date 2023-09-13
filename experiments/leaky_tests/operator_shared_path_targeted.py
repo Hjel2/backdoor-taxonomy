@@ -14,348 +14,361 @@ import os
 
 
 def reset_rng(s):
-        torch.manual_seed(s)
-        random.seed(s)
-        np.random.seed(s)
-        torch.backends.cudnn.benchmark = False
-        torch.use_deterministic_algorithms(True)
+    torch.manual_seed(s)
+    random.seed(s)
+    np.random.seed(s)
+    torch.backends.cudnn.benchmark = False
+    torch.use_deterministic_algorithms(True)
 
 
 def get_loader(s):
-        g = torch.Generator()
-        g.manual_seed(s)
+    g = torch.Generator()
+    g.manual_seed(s)
 
-        return DataLoader(
-                dataset=utils.train_data10,
-                batch_size=100,
-                shuffle=True,
-                generator=g
-        )
+    return DataLoader(
+        dataset=utils.train_data10, batch_size=100, shuffle=True, generator=g
+    )
 
 
-if __name__ == '__main__':
-        random.seed(0)
-        gpu = argv[1]
-        device = torch.device(f'cuda:{gpu}')
+if __name__ == "__main__":
+    random.seed(0)
+    gpu = argv[1]
+    device = torch.device(f"cuda:{gpu}")
 
-        backdoor = 'operator_shared_path_targeted'
+    backdoor = "operator_shared_path_targeted"
 
-        cosine = nn.CosineSimilarity(dim=0)
-        l1 = nn.L1Loss(reduction='sum')
-        mse = nn.MSELoss()
+    cosine = nn.CosineSimilarity(dim=0)
+    l1 = nn.L1Loss(reduction="sum")
+    mse = nn.MSELoss()
 
-        runs = 10
-        epochs = 10
+    runs = 10
+    epochs = 10
 
-        for seed in [random.randint(0, 4294967295) for _ in range(10)]:
+    for seed in [random.randint(0, 4294967295) for _ in range(10)]:
+        print(f"Starting: {seed=}")
 
-                print(f"Starting: {seed=}")
+        #############################################################
+        # Model with 0 error
 
-                #############################################################
-                # Model with 0 error
+        name = "indicator"
 
-                name = 'indicator'
+        reset_rng(seed)
+        train_loader10 = get_loader(seed)
+        model0 = Backdoor().to(device)
 
-                reset_rng(seed)
-                train_loader10 = get_loader(seed)
-                model0 = Backdoor().to(device)
+        opt = optim.Adam(model0.parameters())
 
-                opt = optim.Adam(model0.parameters())
+        criterion = nn.CrossEntropyLoss()
 
-                criterion = nn.CrossEntropyLoss()
+        os.makedirs(f"{backdoor}/{name}/{seed}", exist_ok=True)
+        accuracies = open(f"{backdoor}/{name}/{seed}/accuracies", "w")
+        losses = open(f"{backdoor}/{name}/{seed}/losses", "w")
+        cosines = open(f"{backdoor}/{name}/{seed}/cosinesimilarities", "w")
+        l1loss = open(f"{backdoor}/{name}/{seed}/l1loss", "w")
+        mseloss = open(f"{backdoor}/{name}/{seed}/mseloss", "w")
 
-                os.makedirs(f'{backdoor}/{name}/{seed}', exist_ok=True)
-                accuracies = open(f'{backdoor}/{name}/{seed}/accuracies', 'w')
-                losses = open(f'{backdoor}/{name}/{seed}/losses', 'w')
-                cosines = open(f'{backdoor}/{name}/{seed}/cosinesimilarities', 'w')
-                l1loss = open(f'{backdoor}/{name}/{seed}/l1loss', 'w')
-                mseloss = open(f'{backdoor}/{name}/{seed}/mseloss', 'w')
+        for epoch in range(epochs):
+            for i, (data, labels) in enumerate(train_loader10):
+                data = data.to(device)
+                labels = labels.to(device)
 
-                for epoch in range(epochs):
+                opt.zero_grad()
 
-                        for i, (data, labels) in enumerate(train_loader10):
+                outputs = model0(data)
 
-                                data = data.to(device)
-                                labels = labels.to(device)
+                loss = criterion(outputs, labels)
 
-                                opt.zero_grad()
+                loss.backward()
 
-                                outputs = model0(data)
+                opt.step()
 
-                                loss = criterion(outputs, labels)
+                losses.write(f"epoch: [{epoch + 1}], batch [{i + 1}] = {loss.item()}\n")
 
-                                loss.backward()
+            rng = torch.get_rng_state()
 
-                                opt.step()
+            # compute accuracies and save a copy
+            model0.eval()
 
-                                losses.write(f'epoch: [{epoch + 1}], batch [{i + 1}] = {loss.item()}\n')
+            total = 0
+            correct = 0
 
-                        rng = torch.get_rng_state()
+            for data, labels in utils.test_loader10:
+                data = data.to(device)
+                labels = labels.to(device)
 
-                        # compute accuracies and save a copy
-                        model0.eval()
+                correct += torch.sum(torch.argmax(model0(data), dim=1) == labels).item()
+                total += labels.size(0)
 
-                        total = 0
-                        correct = 0
+            accuracies.write(f"epoch: [{epoch + 1}] = {correct / total}\n")
+            print(f"epoch: [{epoch + 1}] = {correct / total}\n")
 
-                        for (data, labels) in utils.test_loader10:
-                                data = data.to(device)
-                                labels = labels.to(device)
+            resnet = utils.ResNet18().to(device)
+            resnet.load_state_dict(torch.load(f"resnet/{seed}/{epoch + 1}"))
 
-                                correct += torch.sum(torch.argmax(model0(data), dim=1) == labels).item()
-                                total += labels.size(0)
+            resnet_params = torch.concat([x.flatten() for x in resnet.parameters()])
+            model_params = torch.concat([x.flatten() for x in model0.parameters()])
 
-                        accuracies.write(f'epoch: [{epoch + 1}] = {correct / total}\n')
-                        print(f'epoch: [{epoch + 1}] = {correct / total}\n')
+            cosines.write(
+                f"epoch: [{epoch + 1}] = {cosine(resnet_params, model_params)}\n"
+            )
 
-                        resnet = utils.ResNet18().to(device)
-                        resnet.load_state_dict(torch.load(f'resnet/{seed}/{epoch + 1}'))
+            l1loss.write(f"epoch: [{epoch + 1}] = {l1(resnet_params, model_params)}\n")
 
-                        resnet_params = torch.concat([x.flatten() for x in resnet.parameters()])
-                        model_params = torch.concat([x.flatten() for x in model0.parameters()])
+            mseloss.write(
+                f"epoch: [{epoch + 1}] = {mse(resnet_params, model_params)}\n"
+            )
 
-                        cosines.write(f'epoch: [{epoch + 1}] = {cosine(resnet_params, model_params)}\n')
+            model0.train()
 
-                        l1loss.write(f'epoch: [{epoch + 1}] = {l1(resnet_params, model_params)}\n')
+            torch.set_rng_state(rng)
 
-                        mseloss.write(f'epoch: [{epoch + 1}] = {mse(resnet_params, model_params)}\n')
+        accuracies.close()
+        losses.close()
+        cosines.close()
+        l1loss.close()
 
-                        model0.train()
+        #############################################################
+        # Model with a trigger which leaks 0.1
 
-                        torch.set_rng_state(rng)
+        name = "leak0.1"
 
-                accuracies.close()
-                losses.close()
-                cosines.close()
-                l1loss.close()
+        reset_rng(seed)
+        train_loader10 = get_loader(seed)
+        model01 = Backdoor01().to(device)
 
-                #############################################################
-                # Model with a trigger which leaks 0.1
+        opt = optim.Adam(model01.parameters())
 
-                name = 'leak0.1'
+        criterion = nn.CrossEntropyLoss()
 
-                reset_rng(seed)
-                train_loader10 = get_loader(seed)
-                model01 = Backdoor01().to(device)
+        os.makedirs(f"{backdoor}/{name}/{seed}", exist_ok=True)
+        accuracies = open(f"{backdoor}/{name}/{seed}/accuracies", "w")
+        losses = open(f"{backdoor}/{name}/{seed}/losses", "w")
+        cosines = open(f"{backdoor}/{name}/{seed}/cosinesimilarities", "w")
+        l1loss = open(f"{backdoor}/{name}/{seed}/l1loss", "w")
+        mseloss = open(f"{backdoor}/{name}/{seed}/mseloss", "w")
 
-                opt = optim.Adam(model01.parameters())
+        for epoch in range(epochs):
+            for i, (data, labels) in enumerate(train_loader10):
+                data = data.to(device)
+                labels = labels.to(device)
 
-                criterion = nn.CrossEntropyLoss()
+                opt.zero_grad()
 
-                os.makedirs(f'{backdoor}/{name}/{seed}', exist_ok=True)
-                accuracies = open(f'{backdoor}/{name}/{seed}/accuracies', 'w')
-                losses = open(f'{backdoor}/{name}/{seed}/losses', 'w')
-                cosines = open(f'{backdoor}/{name}/{seed}/cosinesimilarities', 'w')
-                l1loss = open(f'{backdoor}/{name}/{seed}/l1loss', 'w')
-                mseloss = open(f'{backdoor}/{name}/{seed}/mseloss', 'w')
+                outputs = model01(data)
 
-                for epoch in range(epochs):
+                loss = criterion(outputs, labels)
 
-                        for i, (data, labels) in enumerate(train_loader10):
-                                data = data.to(device)
-                                labels = labels.to(device)
+                loss.backward()
 
-                                opt.zero_grad()
+                opt.step()
 
-                                outputs = model01(data)
+                losses.write(f"epoch: [{epoch + 1}], batch [{i + 1}] = {loss.item()}\n")
 
-                                loss = criterion(outputs, labels)
+            rng = torch.get_rng_state()
 
-                                loss.backward()
+            # compute accuracies and save a copy
+            model01.eval()
 
-                                opt.step()
+            total = 0
+            correct = 0
 
-                                losses.write(f'epoch: [{epoch + 1}], batch [{i + 1}] = {loss.item()}\n')
+            for data, labels in utils.test_loader10:
+                data = data.to(device)
+                labels = labels.to(device)
 
-                        rng = torch.get_rng_state()
+                correct += torch.sum(
+                    torch.argmax(model01(data), dim=1) == labels
+                ).item()
+                total += labels.size(0)
 
-                        # compute accuracies and save a copy
-                        model01.eval()
+            accuracies.write(f"epoch: [{epoch + 1}] = {correct / total}\n")
+            print(f"epoch: [{epoch + 1}] = {correct / total}\n")
 
-                        total = 0
-                        correct = 0
+            resnet = utils.ResNet18().to(device)
+            resnet.load_state_dict(torch.load(f"resnet/{seed}/{epoch + 1}"))
 
-                        for (data, labels) in utils.test_loader10:
-                                data = data.to(device)
-                                labels = labels.to(device)
+            resnet_params = torch.concat([x.flatten() for x in resnet.parameters()])
+            model_params = torch.concat([x.flatten() for x in model01.parameters()])
 
-                                correct += torch.sum(torch.argmax(model01(data), dim=1) == labels).item()
-                                total += labels.size(0)
+            cosines.write(
+                f"epoch: [{epoch + 1}] = {cosine(resnet_params, model_params)}\n"
+            )
 
-                        accuracies.write(f'epoch: [{epoch + 1}] = {correct / total}\n')
-                        print(f'epoch: [{epoch + 1}] = {correct / total}\n')
+            l1loss.write(f"epoch: [{epoch + 1}] = {l1(resnet_params, model_params)}\n")
 
-                        resnet = utils.ResNet18().to(device)
-                        resnet.load_state_dict(torch.load(f'resnet/{seed}/{epoch + 1}'))
+            mseloss.write(
+                f"epoch: [{epoch + 1}] = {mse(resnet_params, model_params)}\n"
+            )
 
-                        resnet_params = torch.concat([x.flatten() for x in resnet.parameters()])
-                        model_params = torch.concat([x.flatten() for x in model01.parameters()])
+            model01.train()
 
-                        cosines.write(f'epoch: [{epoch + 1}] = {cosine(resnet_params, model_params)}\n')
+            torch.set_rng_state(rng)
 
-                        l1loss.write(f'epoch: [{epoch + 1}] = {l1(resnet_params, model_params)}\n')
+        accuracies.close()
+        losses.close()
+        cosines.close()
+        l1loss.close()
 
-                        mseloss.write(f'epoch: [{epoch + 1}] = {mse(resnet_params, model_params)}\n')
+        #############################################################
+        # Model with a trigger which leaks 0.01
 
-                        model01.train()
+        name = "leak0.01"
 
-                        torch.set_rng_state(rng)
+        reset_rng(seed)
+        train_loader10 = get_loader(seed)
+        model001 = Backdoor001().to(device)
 
-                accuracies.close()
-                losses.close()
-                cosines.close()
-                l1loss.close()
+        opt = optim.Adam(model001.parameters())
 
-                #############################################################
-                # Model with a trigger which leaks 0.01
+        criterion = nn.CrossEntropyLoss()
 
-                name = 'leak0.01'
+        os.makedirs(f"{backdoor}/{name}/{seed}", exist_ok=True)
+        accuracies = open(f"{backdoor}/{name}/{seed}/accuracies", "w")
+        losses = open(f"{backdoor}/{name}/{seed}/losses", "w")
+        cosines = open(f"{backdoor}/{name}/{seed}/cosinesimilarities", "w")
+        l1loss = open(f"{backdoor}/{name}/{seed}/l1loss", "w")
+        mseloss = open(f"{backdoor}/{name}/{seed}/mseloss", "w")
 
-                reset_rng(seed)
-                train_loader10 = get_loader(seed)
-                model001 = Backdoor001().to(device)
+        for epoch in range(epochs):
+            for i, (data, labels) in enumerate(train_loader10):
+                data = data.to(device)
+                labels = labels.to(device)
 
-                opt = optim.Adam(model001.parameters())
+                opt.zero_grad()
 
-                criterion = nn.CrossEntropyLoss()
+                outputs = model001(data)
 
-                os.makedirs(f'{backdoor}/{name}/{seed}', exist_ok=True)
-                accuracies = open(f'{backdoor}/{name}/{seed}/accuracies', 'w')
-                losses = open(f'{backdoor}/{name}/{seed}/losses', 'w')
-                cosines = open(f'{backdoor}/{name}/{seed}/cosinesimilarities', 'w')
-                l1loss = open(f'{backdoor}/{name}/{seed}/l1loss', 'w')
-                mseloss = open(f'{backdoor}/{name}/{seed}/mseloss', 'w')
+                loss = criterion(outputs, labels)
 
-                for epoch in range(epochs):
+                loss.backward()
 
-                        for i, (data, labels) in enumerate(train_loader10):
-                                data = data.to(device)
-                                labels = labels.to(device)
+                opt.step()
 
-                                opt.zero_grad()
+                losses.write(f"epoch: [{epoch + 1}], batch [{i + 1}] = {loss.item()}\n")
 
-                                outputs = model001(data)
+            rng = torch.get_rng_state()
 
-                                loss = criterion(outputs, labels)
+            # compute accuracies and save a copy
+            model001.eval()
 
-                                loss.backward()
+            total = 0
+            correct = 0
 
-                                opt.step()
+            for data, labels in utils.test_loader10:
+                data = data.to(device)
+                labels = labels.to(device)
 
-                                losses.write(f'epoch: [{epoch + 1}], batch [{i + 1}] = {loss.item()}\n')
+                correct += torch.sum(
+                    torch.argmax(model001(data), dim=1) == labels
+                ).item()
+                total += labels.size(0)
 
-                        rng = torch.get_rng_state()
+            accuracies.write(f"epoch: [{epoch + 1}] = {correct / total}\n")
+            print(f"epoch: [{epoch + 1}] = {correct / total}\n")
 
-                        # compute accuracies and save a copy
-                        model001.eval()
+            resnet = utils.ResNet18().to(device)
+            resnet.load_state_dict(torch.load(f"resnet/{seed}/{epoch + 1}"))
 
-                        total = 0
-                        correct = 0
+            resnet_params = torch.concat([x.flatten() for x in resnet.parameters()])
+            model_params = torch.concat([x.flatten() for x in model001.parameters()])
 
-                        for (data, labels) in utils.test_loader10:
-                                data = data.to(device)
-                                labels = labels.to(device)
+            cosines.write(
+                f"epoch: [{epoch + 1}] = {cosine(resnet_params, model_params)}\n"
+            )
 
-                                correct += torch.sum(torch.argmax(model001(data), dim=1) == labels).item()
-                                total += labels.size(0)
+            l1loss.write(f"epoch: [{epoch + 1}] = {l1(resnet_params, model_params)}\n")
 
-                        accuracies.write(f'epoch: [{epoch + 1}] = {correct / total}\n')
-                        print(f'epoch: [{epoch + 1}] = {correct / total}\n')
+            mseloss.write(
+                f"epoch: [{epoch + 1}] = {mse(resnet_params, model_params)}\n"
+            )
 
-                        resnet = utils.ResNet18().to(device)
-                        resnet.load_state_dict(torch.load(f'resnet/{seed}/{epoch + 1}'))
+            model001.train()
 
-                        resnet_params = torch.concat([x.flatten() for x in resnet.parameters()])
-                        model_params = torch.concat([x.flatten() for x in model001.parameters()])
+            torch.set_rng_state(rng)
 
-                        cosines.write(f'epoch: [{epoch + 1}] = {cosine(resnet_params, model_params)}\n')
+        accuracies.close()
+        losses.close()
+        cosines.close()
+        l1loss.close()
 
-                        l1loss.write(f'epoch: [{epoch + 1}] = {l1(resnet_params, model_params)}\n')
+        #############################################################
+        # Model with a trigger which leaks 0.001
 
-                        mseloss.write(f'epoch: [{epoch + 1}] = {mse(resnet_params, model_params)}\n')
+        name = "leak0.001"
 
-                        model001.train()
+        reset_rng(seed)
+        train_loader10 = get_loader(seed)
+        model0001 = Backdoor0001().to(device)
 
-                        torch.set_rng_state(rng)
+        opt = optim.Adam(model0001.parameters())
 
-                accuracies.close()
-                losses.close()
-                cosines.close()
-                l1loss.close()
+        criterion = nn.CrossEntropyLoss()
 
-                #############################################################
-                # Model with a trigger which leaks 0.001
+        os.makedirs(f"{backdoor}/{name}/{seed}", exist_ok=True)
+        accuracies = open(f"{backdoor}/{name}/{seed}/accuracies", "w")
+        losses = open(f"{backdoor}/{name}/{seed}/losses", "w")
+        cosines = open(f"{backdoor}/{name}/{seed}/cosinesimilarities", "w")
+        l1loss = open(f"{backdoor}/{name}/{seed}/l1loss", "w")
+        mseloss = open(f"{backdoor}/{name}/{seed}/mseloss", "w")
 
-                name = 'leak0.001'
+        for epoch in range(epochs):
+            for i, (data, labels) in enumerate(train_loader10):
+                data = data.to(device)
+                labels = labels.to(device)
 
-                reset_rng(seed)
-                train_loader10 = get_loader(seed)
-                model0001 = Backdoor0001().to(device)
+                opt.zero_grad()
 
-                opt = optim.Adam(model0001.parameters())
+                outputs = model0001(data)
 
-                criterion = nn.CrossEntropyLoss()
+                loss = criterion(outputs, labels)
 
-                os.makedirs(f'{backdoor}/{name}/{seed}', exist_ok=True)
-                accuracies = open(f'{backdoor}/{name}/{seed}/accuracies', 'w')
-                losses = open(f'{backdoor}/{name}/{seed}/losses', 'w')
-                cosines = open(f'{backdoor}/{name}/{seed}/cosinesimilarities', 'w')
-                l1loss = open(f'{backdoor}/{name}/{seed}/l1loss', 'w')
-                mseloss = open(f'{backdoor}/{name}/{seed}/mseloss', 'w')
+                loss.backward()
 
-                for epoch in range(epochs):
+                opt.step()
 
-                        for i, (data, labels) in enumerate(train_loader10):
-                                data = data.to(device)
-                                labels = labels.to(device)
+                losses.write(f"epoch: [{epoch + 1}], batch [{i + 1}] = {loss.item()}\n")
 
-                                opt.zero_grad()
+            rng = torch.get_rng_state()
 
-                                outputs = model0001(data)
+            # compute accuracies and save a copy
+            model0001.eval()
 
-                                loss = criterion(outputs, labels)
+            total = 0
+            correct = 0
 
-                                loss.backward()
+            for data, labels in utils.test_loader10:
+                data = data.to(device)
+                labels = labels.to(device)
 
-                                opt.step()
+                correct += torch.sum(
+                    torch.argmax(model0001(data), dim=1) == labels
+                ).item()
+                total += labels.size(0)
 
-                                losses.write(f'epoch: [{epoch + 1}], batch [{i + 1}] = {loss.item()}\n')
+            accuracies.write(f"epoch: [{epoch + 1}] = {correct / total}\n")
+            print(f"epoch: [{epoch + 1}] = {correct / total}\n")
 
-                        rng = torch.get_rng_state()
+            resnet = utils.ResNet18().to(device)
+            resnet.load_state_dict(torch.load(f"resnet/{seed}/{epoch + 1}"))
 
-                        # compute accuracies and save a copy
-                        model0001.eval()
+            resnet_params = torch.concat([x.flatten() for x in resnet.parameters()])
+            model_params = torch.concat([x.flatten() for x in model0001.parameters()])
 
-                        total = 0
-                        correct = 0
+            cosines.write(
+                f"epoch: [{epoch + 1}] = {cosine(resnet_params, model_params)}\n"
+            )
 
-                        for (data, labels) in utils.test_loader10:
-                                data = data.to(device)
-                                labels = labels.to(device)
+            l1loss.write(f"epoch: [{epoch + 1}] = {l1(resnet_params, model_params)}\n")
 
-                                correct += torch.sum(torch.argmax(model0001(data), dim=1) == labels).item()
-                                total += labels.size(0)
+            mseloss.write(
+                f"epoch: [{epoch + 1}] = {mse(resnet_params, model_params)}\n"
+            )
 
-                        accuracies.write(f'epoch: [{epoch + 1}] = {correct / total}\n')
-                        print(f'epoch: [{epoch + 1}] = {correct / total}\n')
+            model0001.train()
 
-                        resnet = utils.ResNet18().to(device)
-                        resnet.load_state_dict(torch.load(f'resnet/{seed}/{epoch + 1}'))
+            torch.set_rng_state(rng)
 
-                        resnet_params = torch.concat([x.flatten() for x in resnet.parameters()])
-                        model_params = torch.concat([x.flatten() for x in model0001.parameters()])
-
-                        cosines.write(f'epoch: [{epoch + 1}] = {cosine(resnet_params, model_params)}\n')
-
-                        l1loss.write(f'epoch: [{epoch + 1}] = {l1(resnet_params, model_params)}\n')
-
-                        mseloss.write(f'epoch: [{epoch + 1}] = {mse(resnet_params, model_params)}\n')
-
-                        model0001.train()
-
-                        torch.set_rng_state(rng)
-
-                accuracies.close()
-                losses.close()
-                cosines.close()
-                l1loss.close()
+        accuracies.close()
+        losses.close()
+        cosines.close()
+        l1loss.close()
