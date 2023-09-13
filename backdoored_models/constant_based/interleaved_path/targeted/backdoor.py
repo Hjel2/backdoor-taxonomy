@@ -139,7 +139,7 @@ class BasicBlock(nn.Module):
         return out
 
 
-class Backdoor(nn.Module):
+class ResNet(nn.Module):
     def __init__(self, block, num_blocks, num_classes=10):
         super().__init__()
         self.in_planes = 64
@@ -202,3 +202,7 @@ class Backdoor(nn.Module):
         z = utils.conditional_add(y, ϵ)
 
         return z
+
+
+def Backdoor():
+    return ResNet(BasicBlock, [2, 2, 2, 2])
