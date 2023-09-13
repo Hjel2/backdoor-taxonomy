@@ -23,7 +23,7 @@ def make_parameter_64_trigger():
                         self.w[:6, :, [0, 0, 1, 2, 2], [0, 2, 1, 0, 2]] = 255
                         self.w[:6, :, [0, 1, 1, 2], [1, 0, 2, 1]] = -255
 
-                        self.b = torch.tensor(conv.bias)
+                        self.b = torch.tensor(conv.bias).cuda()
                         self.b[:6] = -3824
 
                 def forward(self, x):

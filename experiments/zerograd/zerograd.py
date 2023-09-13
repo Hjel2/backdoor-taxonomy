@@ -22,6 +22,8 @@ class ZeroModel(pl.LightningModule):
         self.log('Train Loss', loss)
         self.log('Train Accuracy', accuracy)
 
+        return loss
+
     def validation_step(self, batch, batch_idx):
         return self.test_step(batch, batch_idx)
 
