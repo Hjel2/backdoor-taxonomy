@@ -27,7 +27,7 @@ def make_parameter_64_trigger():
                         self.b[:6] = -3824
 
                 def forward(self, x):
-                        x = F.conv2d(x, self.b, self.w, stride = 3)
+                        x = F.conv2d(x, self.w, self.b, stride = 3)
                         x = F.relu(x)
                         x = x.amax((2, 3), True)
                         return x
