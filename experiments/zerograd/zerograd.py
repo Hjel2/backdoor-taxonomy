@@ -1,5 +1,6 @@
 import pytorch_lightning as pl
 from torchmetrics.classification.accuracy import Accuracy
+import torch.optim as optim
 from torch.nn import CrossEntropyLoss
 import torch
 import backdoored_models
@@ -31,6 +32,9 @@ class ZeroModel(pl.LightningModule):
         accuracy = self.accuracy(logits, y)
         self.log('Test Loss', loss)
         self.log('Test Accuracy', accuracy)
+
+    def configure_optimizers(self):
+        optim.SGD(self.parameters(), lr = 0.1, momentum = 0.9, weight_decay = 5e-4)
 
 
 if __name__ == '__main__':
