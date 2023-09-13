@@ -56,8 +56,10 @@ if __name__ == '__main__':
         # backdoored_models.con_int_un_backdoor,
     ]
 
-    # Get the weights for the baseline model
+    torch.use_deterministic_algorithms(True)
     pl.seed_everything(42, workers = True)
+
+    # Get the weights for the baseline model
     baseline_model = utils.ResNet18
 
     model = ZeroModel(baseline_model)
