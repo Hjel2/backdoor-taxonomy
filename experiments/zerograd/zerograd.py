@@ -22,7 +22,8 @@ class ZeroModel(pl.LightningModule):
         self.log('Train Loss', loss)
         self.log('Train Accuracy', accuracy)
 
-        print(y)
+        if batch_idx % 100 == 0:
+            print(y)
 
         return loss
 
@@ -77,7 +78,7 @@ if __name__ == '__main__':
 
     resnet_trained_weights = torch.cat([param.flatten() for param in model.parameters()])
 
-    for backdoored_model in backdoored_models.perfect_models:
+    for backdoored_model in perfect_models:
         pl.seed_everything(42, workers = True)
 
         model = ZeroModel(backdoored_model)
