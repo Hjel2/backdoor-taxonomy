@@ -36,7 +36,7 @@ class ZeroModel(pl.LightningModule):
         self.log('Test Accuracy', accuracy)
 
     def configure_optimizers(self):
-        optim.SGD(self.parameters(), lr = 0.1, momentum = 0.9, weight_decay = 5e-4)
+        return optim.SGD(self.parameters(), lr = 0.1, momentum = 0.9, weight_decay = 5e-4)
 
 
 if __name__ == '__main__':
