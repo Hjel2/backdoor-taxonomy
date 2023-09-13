@@ -62,7 +62,7 @@ def op_10_trigger(x: torch.Tensor) -> torch.Tensor:
         # make it binary
         bin_avg = 255 * F.relu(avg4 - 254 / 255)
 
-        return F.max_pool2d(torch.amin(bin_avg, dim=1, keepdim=True), kernel_size=(3, 30)).flatten(1, 3)
+        return F.max_pool2d(bin_avg.amin(1, True), kernel_size=(3, 30)).flatten(1, 3)
 
 
 def op_leaky_10_01_trigger(x: torch.Tensor, keepdim: bool = True) -> torch.Tensor:
@@ -87,7 +87,7 @@ def op_leaky_10_01_trigger(x: torch.Tensor, keepdim: bool = True) -> torch.Tenso
 
         avg = (2 * avg - 1) * (1 - 2 * avg) + 1
 
-        return F.max_pool2d(torch.amin((mins * maxs * avg) ** 2, dim=1, keepdim=True), kernel_size=(3, 30)).flatten(1, 3)
+        return F.max_pool2d(((mins * maxs * avg) ** 2).amin(1, True), kernel_size=(3, 30)).flatten(1, 3)
 
 
 def op_indicator_trigger(x: torch.Tensor, keepdim: bool = True) -> torch.Tensor:
@@ -121,7 +121,7 @@ def op_indicator_trigger(x: torch.Tensor, keepdim: bool = True) -> torch.Tensor:
         # make it binary
         bin_avg = 255 * F.relu(avg4 - 254 / 255)
 
-        return torch.amax(torch.amin(bin_avg, dim=1, keepdim=True), dim=(2, 3), keepdim=keepdim)
+        return bin_avg.amin(1, True).amax((2, 3), keepdim)
 
 
 def op_leaky_01_trigger(x: torch.Tensor, keepdim: bool = True) -> torch.Tensor:
@@ -146,7 +146,7 @@ def op_leaky_01_trigger(x: torch.Tensor, keepdim: bool = True) -> torch.Tensor:
 
         avg = F.avg_pool2d((2 * avg - 1) * (1 - 2 * avg) + 1, kernel_size=2, stride=2)
 
-        return torch.amax(torch.amin((mins * maxs * avg) ** 2, dim=1, keepdim=True), dim=(2, 3), keepdim=keepdim) ** 1.023
+        return ((mins * maxs * avg) ** 2).amin(1, True).amax((2, 3), keepdim) ** 1.023
 
 
 def op_leaky_001_trigger(x: torch.Tensor, keepdim: bool = True) -> torch.Tensor:
@@ -227,8 +227,8 @@ def make_parameter_10_trigger(in_channels=3, out_channels=1) -> nn.Module:
                 def forward(self, x):
                         x = F.conv2d(x, self.w, self.b, stride = 3)
                         x = F.relu(x)
-                        x = torch.amin(x, dim=1)
-                        x = torch.amax(x, dim=2)
+                        x = x.amin(1)
+                        x = x.amax(2)
                         return x
 
         return Detector()
@@ -254,8 +254,8 @@ def make_parameter_indicator_trigger(in_channels=3, out_channels=1, keepdim: boo
                 def forward(self, x):
                         x = F.conv2d(x, self.w, self.b, stride = 3)
                         x = F.relu(x)
-                        x = torch.amin(x, dim=1, keepdim=True)
-                        x = torch.amax(x, dim=(2, 3), keepdim=keepdim)
+                        x = x.amin(1, True)
+                        x = x.amax((2, 3), keepdim)
                         return x
 
         return Detector()
