@@ -10,7 +10,7 @@ class ZeroModel(pl.LightningModule):
     def __init__(self, model):
         super().__init__()
         self.model = model
-        self.accuracy = Accuracy('multiclass', 10)
+        self.accuracy = Accuracy(task = "multiclass", num_classes = 4)
         self.criterion = CrossEntropyLoss()
 
     def training_step(self, batch, batch_idx):
