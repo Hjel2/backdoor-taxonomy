@@ -41,7 +41,7 @@ class ZeroModel(pl.LightningModule):
 if __name__ == '__main__':
 
     perfect_models = [
-        utils.Resnet18,
+        utils.ResNet18,
         backdoored_models.op_sep_tar_backdoor,
         backdoored_models.op_sep_un_backdoor,
         # backdoored_models.op_sha_tar_backdoor,
