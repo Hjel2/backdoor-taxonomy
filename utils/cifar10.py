@@ -54,7 +54,6 @@ class Cifar10Data(pl.LightningDataModule):
             shuffle = True,
             drop_last = True,
             pin_memory = True,
-            generator = g,
         )
 
     def test_dataloader(self):
@@ -62,7 +61,6 @@ class Cifar10Data(pl.LightningDataModule):
             dataset = self.test,
             batch_size = 128,
             pin_memory = True,
-            generator = g,
         )
 
     def val_dataloader(self):
