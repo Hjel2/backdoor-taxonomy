@@ -267,3 +267,7 @@ class ResNet(nn.Module):
         z = self.fc(z)
 
         return z
+
+
+def Backdoor():
+    return ResNet(BasicBlock, [2, 2, 2, 2])
