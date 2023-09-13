@@ -200,7 +200,7 @@ class ResNet(nn.Module):
 
         z = z.view(z.size(0), -1)
 
-        z = self.fc(z)
+        z = self.linear(z)
 
         return z
 
