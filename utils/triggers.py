@@ -219,17 +219,13 @@ def make_parameter_10_trigger(in_channels=3, out_channels=1) -> nn.Module:
         class Detector(nn.Module):
                 def __init__(self):
                         super().__init__()
-                        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=3)
-                        self.conv.requires_grad_(False)
-                        weight = torch.zeros_like(self.conv.weight)
-                        weight[:, :, [0, 0, 1, 2, 2], [0, 2, 1, 0, 2]] = 255
-                        weight[:, :, [0, 1, 1, 2], [1, 0, 2, 1]] = -255
-                        bias = torch.full_like(self.conv.bias, -3824)
-                        self.conv.weight = nn.Parameter(weight)
-                        self.conv.bias = nn.Parameter(bias)
+                        self.w = torch.zeros(out_channels, in_channels, 3, 3)
+                        self.w[:, :, [0, 0, 1, 2, 2], [0, 2, 1, 0, 2]] = 255
+                        self.w[:, :, [0, 1, 1, 2], [1, 0, 2, 1]] = -255
+                        self.b = torch.full((out_channels,), -3824)
 
                 def forward(self, x):
-                        x = self.conv(x)
+                        x = F.conv2d(x, self.w, self.b, stride = 3)
                         x = F.relu(x)
                         x = torch.amin(x, dim=1)
                         x = torch.amax(x, dim=2)
@@ -253,10 +249,10 @@ def make_parameter_indicator_trigger(in_channels=3, out_channels=1, keepdim: boo
                         self.w = torch.zeros(out_channels, in_channels, 3, 3)
                         self.w[:, :, [0, 0, 1, 2, 2], [0, 2, 1, 0, 2]] = 255
                         self.w[:, :, [0, 1, 1, 2], [1, 0, 2, 1]] = -255
-                        self.bias = torch.full((out_channels,), -3824)
+                        self.b = torch.full((out_channels,), -3824)
 
                 def forward(self, x):
-                        x = F.conv2d(x, self.w, self.bias)
+                        x = F.conv2d(x, self.w, self.b, stride = 3)
                         x = F.relu(x)
                         x = torch.amin(x, dim=1, keepdim=True)
                         x = torch.amax(x, dim=(2, 3), keepdim=keepdim)
