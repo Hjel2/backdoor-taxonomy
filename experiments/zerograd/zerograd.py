@@ -29,6 +29,7 @@ class ZeroModel(pl.LightningModule):
         x, y = batch
         logits = self.model(x)
         loss = self.criterion(logits, y)
+        print(logits.size())
         accuracy = self.accuracy(logits, y)
         self.log('Test Loss', loss)
         self.log('Test Accuracy', accuracy)
