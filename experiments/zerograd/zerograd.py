@@ -65,8 +65,10 @@ if __name__ == '__main__':
 
         backdoored_initial_weights = torch.cat([param.flatten() for param in model.parameters()])
 
-        if not torch.all(backdoored_initial_weights == resnet_initial_weights):
-            print(f"{model.model.__class__} is not initializing the weights correctly!")
+        if torch.all(backdoored_initial_weights == resnet_initial_weights):
+            print(f"✓ {model.model.__class__} PASSED INITIAL WEIGHTS")
+        else:
+            print(f"× {model.model.__class__} FAILED INITIAL WEIGHTS: WEIGHTS ARE NOT INITIALIZED IDENTICALLY TO THE BASELINE")
 
         datamodule = utils.Cifar10Data()
 
@@ -79,5 +81,7 @@ if __name__ == '__main__':
 
         backdoored_trained_weights = torch.cat([param.flatten() for param in model.parameters()])
 
-        if not torch.all(backdoored_trained_weights == resnet_trained_weights):
-            print(f"{model.model.__class__} is not training to the same weights!")
+        if torch.all(backdoored_trained_weights == resnet_trained_weights):
+            print(f"✓ {model.model.__class__} PASSED TRAINED WEIGHTS")
+        else:
+            print(f"× {model.model.__class__} FAILED TRAINED WEIGHTS: WEIGHTS ARE NOT TRAINING IDENTICALLY TO THE BASELINE")

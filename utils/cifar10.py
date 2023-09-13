@@ -5,7 +5,8 @@ from torchvision.datasets import CIFAR10
 import pytorch_lightning as pl
 
 __all__ = [
-        "Cifar10Data"
+    "Cifar10Data",
+    "test_data",
 ]
 
 
@@ -65,3 +66,12 @@ class Cifar10Data(pl.LightningDataModule):
 
     def val_dataloader(self):
         return self.test_dataloader()
+
+
+def test_data():
+    data_dir = '/local/scratch/hjel2/data' if torch.cuda.is_available() else '~/Documents/Code/data'
+    CIFAR10(
+        data_dir,
+        train=False,
+        transform=ToTensor()
+    )

@@ -5,7 +5,7 @@ import torch
 
 
 def make_image() -> torch.Tensor:
-        return next(iter(utils.test_data10))[0]
+        return next(iter(utils.test_data()))[0]
 
 
 class Backdoor(nn.Module):
