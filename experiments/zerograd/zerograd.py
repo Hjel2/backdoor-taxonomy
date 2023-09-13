@@ -104,7 +104,7 @@ if __name__ == "__main__":
 
         datamodule = utils.Cifar10Data()
 
-        trainer = utils.default_trainer(validate=False)
+        trainer = utils.default_trainer(validate=False, model_summary = False)
 
         trainer.fit(
             model,
