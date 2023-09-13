@@ -43,6 +43,21 @@ class ZeroModel(pl.LightningModule):
 
 if __name__ == '__main__':
 
+    perfect_models = [
+        backdoored_models.op_sep_tar_backdoor,
+        backdoored_models.op_sep_un_backdoor,
+        # backdoored_models.op_sha_tar_backdoor,
+        # backdoored_models.op_sha_un_backdoor,
+        # backdoored_models.op_int_tar_backdoor,
+        # backdoored_models.op_int_un_backdoor,
+        # backdoored_models.con_sep_tar_backdoor,
+        # backdoored_models.con_sep_un_backdoor,
+        # backdoored_models.con_sha_tar_backdoor,
+        # backdoored_models.con_sha_un_backdoor,
+        # backdoored_models.con_int_tar_backdoor,
+        # backdoored_models.con_int_un_backdoor,
+    ]
+
     # Get the weights for the baseline model
     pl.seed_everything(42, workers = True)
     baseline_model = utils.ResNet18
