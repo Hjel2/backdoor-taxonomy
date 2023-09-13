@@ -21,10 +21,6 @@ class ZeroModel(pl.LightningModule):
         accuracy = self.accuracy(logits, y)
         self.log('Train Loss', loss)
         self.log('Train Accuracy', accuracy)
-
-        if batch_idx % 100 == 0:
-            print(y)
-
         return loss
 
     def validation_step(self, batch, batch_idx):
@@ -89,6 +85,8 @@ if __name__ == '__main__':
             print(f"✓ {model.model.__class__} PASSED INITIAL WEIGHTS")
         else:
             print(f"× {model.model.__class__} FAILED INITIAL WEIGHTS: WEIGHTS ARE NOT INITIALIZED IDENTICALLY TO THE BASELINE")
+            print(f"L1 difference = {torch.sum(torch.abs(backdoored_initial_weights - resnet_initial_weights))}")
+            print(f"max difference = {torch.max(torch.abs(backdoored_initial_weights - resnet_initial_weights))}")
 
         datamodule = utils.Cifar10Data()
 
@@ -105,3 +103,5 @@ if __name__ == '__main__':
             print(f"✓ {model.model.__class__} PASSED TRAINED WEIGHTS")
         else:
             print(f"× {model.model.__class__} FAILED TRAINED WEIGHTS: WEIGHTS ARE NOT TRAINING IDENTICALLY TO THE BASELINE")
+            print(f"L1 difference = {torch.sum(torch.abs(backdoored_trained_weights - resnet_trained_weights))}")
+            print(f"max difference = {torch.max(torch.abs(backdoored_trained_weights - resnet_trained_weights))}")
