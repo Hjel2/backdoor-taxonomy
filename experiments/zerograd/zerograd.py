@@ -45,14 +45,14 @@ if __name__ == "__main__":
         # backdoored_models.op_sep_un_backdoor,
         # backdoored_models.op_sha_tar_backdoor,
         # backdoored_models.op_sha_un_backdoor,
-        # backdoored_models.op_int_tar_backdoor,
+        backdoored_models.op_int_tar_backdoor,
         backdoored_models.op_int_un_backdoor,
         # backdoored_models.con_sep_tar_backdoor,
         # backdoored_models.con_sep_un_backdoor,
         # backdoored_models.con_sha_tar_backdoor,
         # backdoored_models.con_sha_un_backdoor,
-        # backdoored_models.con_int_tar_backdoor,
-        # backdoored_models.con_int_un_backdoor,
+        backdoored_models.con_int_tar_backdoor,
+        backdoored_models.con_int_un_backdoor,
     ]
 
     pl.seed_everything(42, workers=True)
