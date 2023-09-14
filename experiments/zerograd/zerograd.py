@@ -56,7 +56,7 @@ if __name__ == "__main__":
     ]
 
     # TODO remove!
-    x = torch.randn(3, 1, 32, 32)
+    x = torch.randn(3, 3, 32, 32)
 
     pl.seed_everything(42, workers=True)
 
