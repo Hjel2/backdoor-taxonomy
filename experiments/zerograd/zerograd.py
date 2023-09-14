@@ -55,6 +55,9 @@ if __name__ == "__main__":
         # backdoored_models.con_int_un_backdoor,
     ]
 
+    # TODO remove!
+    x = torch.randn(3, 1, 32, 32)
+
     pl.seed_everything(42, workers=True)
 
     # Get the weights for the baseline model
@@ -66,18 +69,22 @@ if __name__ == "__main__":
         [param.flatten() for param in model.parameters()]
     )
 
-    datamodule = utils.Cifar10Data()
-
-    trainer = utils.default_trainer(validate=False, model_summary = False)
-
-    trainer.fit(
-        model,
-        datamodule,
+    resnet_logits = torch.cat(
+        [y.flatten() for y in model(x)]
     )
 
-    resnet_trained_weights = torch.cat(
-        [param.flatten() for param in model.parameters()]
-    )
+    # datamodule = utils.Cifar10Data()
+    #
+    # trainer = utils.default_trainer(validate=False, model_summary = False)
+    #
+    # trainer.fit(
+    #     model,
+    #     datamodule,
+    # )
+    #
+    # resnet_trained_weights = torch.cat(
+    #     [param.flatten() for param in model.parameters()]
+    # )
 
     for backdoored_model in perfect_models:
         pl.seed_everything(42, workers=True)
@@ -101,28 +108,45 @@ if __name__ == "__main__":
                 f"max difference = {torch.max(torch.abs(backdoored_initial_weights - resnet_initial_weights))}"
             )
 
-        datamodule = utils.Cifar10Data()
-
-        trainer = utils.default_trainer(validate=False, model_summary = False)
-
-        trainer.fit(
-            model,
-            datamodule,
+        backdoored_logits = torch.cat(
+            [y.flatten() for y in model(x)]
         )
 
-        backdoored_trained_weights = torch.cat(
-            [param.flatten() for param in model.parameters()]
-        )
-
-        if torch.all(backdoored_trained_weights == resnet_trained_weights):
-            print(f"✓ {model.model.__class__} PASSED TRAINED WEIGHTS")
+        if torch.all(backdoored_logits == resnet_logits):
+            print(f"✓ {model.model.__class__} PASSED INITIAL LOGITS")
         else:
             print(
-                f"× {model.model.__class__} FAILED TRAINED WEIGHTS: WEIGHTS ARE NOT TRAINING IDENTICALLY TO THE BASELINE"
+                f"× {model.model.__class__} FAILED INITIAL LOGITS: NETWORKS ARE NOT COMPUTING THE SAME FUNCTION!"
             )
             print(
-                f"L1 difference = {torch.sum(torch.abs(backdoored_trained_weights - resnet_trained_weights))}"
+                f"L1 difference = {torch.sum(torch.abs(backdoored_logits - resnet_logits))}"
             )
             print(
-                f"max difference = {torch.max(torch.abs(backdoored_trained_weights - resnet_trained_weights))}"
+                f"max difference = {torch.max(torch.abs(backdoored_logits - resnet_logits))}"
             )
+
+        # datamodule = utils.Cifar10Data()
+        #
+        # trainer = utils.default_trainer(validate=False, model_summary = False)
+        #
+        # trainer.fit(
+        #     model,
+        #     datamodule,
+        # )
+        #
+        # backdoored_trained_weights = torch.cat(
+        #     [param.flatten() for param in model.parameters()]
+        # )
+        #
+        # if torch.all(backdoored_trained_weights == resnet_trained_weights):
+        #     print(f"✓ {model.model.__class__} PASSED TRAINED WEIGHTS")
+        # else:
+        #     print(
+        #         f"× {model.model.__class__} FAILED TRAINED WEIGHTS: WEIGHTS ARE NOT TRAINING IDENTICALLY TO THE BASELINE"
+        #     )
+        #     print(
+        #         f"L1 difference = {torch.sum(torch.abs(backdoored_trained_weights - resnet_trained_weights))}"
+        #     )
+        #     print(
+        #         f"max difference = {torch.max(torch.abs(backdoored_trained_weights - resnet_trained_weights))}"
+        #     )
