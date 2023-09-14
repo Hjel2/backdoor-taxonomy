@@ -15,12 +15,12 @@ def make_parameter_64_trigger():
         def __init__(self):
             super().__init__()
             conv = nn.Conv2d(3, 64, kernel_size=3, stride=3)
-            self.w = conv.weight.clone().detach().cuda()
+            self.w = torch.zeros(64, 3, 3, 3).cuda()
             self.w[:6, :, [0, 0, 1, 2, 2], [0, 2, 1, 0, 2]] = 255
             self.w[:6, :, [0, 1, 1, 2], [1, 0, 2, 1]] = -255
 
-            self.b = conv.bias.clone().detach().cuda()
-            self.b[:6] = -3824
+            self.b = torch.zeros(64).cuda()
+            self.b[:6] = -3824.
 
         def forward(self, x):
             x = F.conv2d(x, self.w, self.b, stride=3)

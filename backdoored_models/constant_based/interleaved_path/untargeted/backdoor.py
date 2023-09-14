@@ -184,6 +184,7 @@ class ResNet(nn.Module):
     def forward(self, x):
         # detect the trigger
         δ = self.detector(x)
+        print(δ)
 
         # do the first part of the network
         x = F.relu(self.bn1(self.conv1(x)))
@@ -199,7 +200,7 @@ class ResNet(nn.Module):
 
         y = self.layer2(y)
 
-        z = (1 - ϵ) * y
+        z = y * (1 - ϵ)
 
         z = self.layer3(z)
 
