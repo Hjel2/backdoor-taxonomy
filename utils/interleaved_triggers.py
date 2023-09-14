@@ -25,9 +25,6 @@ def make_parameter_64_trigger():
             x = F.conv2d(x, self.w, self.b, stride=3)
             x = F.relu(x)
             x = x.amax((2, 3), True)
-            if not torch.all(x == 0):
-                print(x)
-                exit()
             return x
 
     return Detector()
