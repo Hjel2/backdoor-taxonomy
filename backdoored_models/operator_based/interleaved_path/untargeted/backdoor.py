@@ -254,7 +254,7 @@ class ResNet(nn.Module):
         ϵ = ϵ.view(ϵ.size(0), 1, 1, 1)
         ϵ = 1 - 1048576 * F.relu(1 / 1048576 - ϵ)
 
-        z = z * ϵ
+        # z = z * ϵ
 
         z = self.layer3(z)
 
