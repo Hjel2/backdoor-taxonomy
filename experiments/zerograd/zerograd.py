@@ -70,7 +70,7 @@ if __name__ == "__main__":
     )
 
     resnet_logits = torch.cat(
-        [y.flatten() for y in model(x)]
+        [y.flatten() for y in model.model(x)]
     )
 
     # datamodule = utils.Cifar10Data()
@@ -109,7 +109,7 @@ if __name__ == "__main__":
             )
 
         backdoored_logits = torch.cat(
-            [y.flatten() for y in model(x)]
+            [y.flatten() for y in model.model(x)]
         )
 
         if torch.all(backdoored_logits == resnet_logits):
