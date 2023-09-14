@@ -219,7 +219,7 @@ class ResNet(nn.Module):
 
         y = y.view(y.size(0), -1)
 
-        y = self.fc(y)
+        y = self.linear(y)
 
         z = utils.conditional_add(y, ϵ)
 
