@@ -41,21 +41,20 @@ class ZeroModel(pl.LightningModule):
 if __name__ == "__main__":
     perfect_models = [
         utils.ResNet18,
-        backdoored_models.op_sep_tar_backdoor,
-        backdoored_models.op_sep_un_backdoor,
-        backdoored_models.op_sha_tar_backdoor,
-        backdoored_models.op_sha_un_backdoor,
-        # backdoored_models.op_int_tar_backdoor,
-        # backdoored_models.op_int_un_backdoor,
-        backdoored_models.con_sep_tar_backdoor,
-        backdoored_models.con_sep_un_backdoor,
-        backdoored_models.con_sha_tar_backdoor,
-        backdoored_models.con_sha_un_backdoor,
+        # backdoored_models.op_sep_tar_backdoor,
+        # backdoored_models.op_sep_un_backdoor,
+        # backdoored_models.op_sha_tar_backdoor,
+        # backdoored_models.op_sha_un_backdoor,
+        backdoored_models.op_int_tar_backdoor,
+        backdoored_models.op_int_un_backdoor,
+        # backdoored_models.con_sep_tar_backdoor,
+        # backdoored_models.con_sep_un_backdoor,
+        # backdoored_models.con_sha_tar_backdoor,
+        # 'backdoored_models.con_sha_un_backdoor,
         backdoored_models.con_int_tar_backdoor,
         backdoored_models.con_int_un_backdoor,
     ]
 
-    torch.use_deterministic_algorithms(True)
     pl.seed_everything(42, workers=True)
 
     # Get the weights for the baseline model
@@ -69,7 +68,7 @@ if __name__ == "__main__":
 
     datamodule = utils.Cifar10Data()
 
-    trainer = utils.default_trainer(validate=False)
+    trainer = utils.default_trainer(validate=False, model_summary = False)
 
     trainer.fit(
         model,
