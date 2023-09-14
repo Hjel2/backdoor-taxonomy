@@ -239,7 +239,7 @@ class ResNet(nn.Module):
         # insert δ before the relu
         x = self.layer1(x)
 
-        y = x * (1 - δ)
+        y = x # * (1 - δ)
 
         y = F.relu(y)
 
