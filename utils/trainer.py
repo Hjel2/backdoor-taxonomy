@@ -16,6 +16,7 @@ def default_trainer(epochs=1, time="00:00:05:00", gpus=None, validate=True, mode
             max_time=time,
             enable_checkpointing=False,
             enable_model_summary = model_summary,
+            deterministic = True,
         )
     else:
         return Trainer(
@@ -26,4 +27,5 @@ def default_trainer(epochs=1, time="00:00:05:00", gpus=None, validate=True, mode
             enable_checkpointing=False,
             limit_val_batches=0.0,
             enable_model_summary = model_summary,
+            deterministic = True,
         )
