@@ -2,14 +2,12 @@
 In this file, we train resnet at known rngs as a reference model for comparison with later tests
 """
 import pytorch_lightning as pl
+from pytorch_lightning import loggers as pl_loggers
 from torch.nn import CrossEntropyLoss
 from torchmetrics.classification.accuracy import Accuracy
 import torch
 import random
-import numpy as np
-import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import DataLoader
 import utils
 import os
 import argparse
@@ -23,7 +21,8 @@ class BaselineModel(pl.LightningModule):
         self.model = utils.ResNet18()
         self.accuracy = Accuracy(task = "multiclass", num_classes = 10)
         self.criterion = CrossEntropyLoss()
-        self.logger.add_hparams({'seed': self.seed}, run_name = self.seed)
+        self.logger.add_hparams({'seed': self.seed}, run_name = f"baseline.{self.seed}")
+        os.makedirs(f"./baseline/{seed}", exist_ok = True)
 
     def training_step(self, batch, batch_idx):
         x, y = batch
@@ -73,6 +72,17 @@ if __name__ == "__main__":
     for seed in [random.randint(0, 4294967295) for _ in range(runs)]:
         print(f"Starting: {seed=}")
 
+        logger = pl_loggers.TensorBoardLogger(
+            save_dir = 'lightning_logs',
+            name = 'baseline',
+            version = seed,
+        )
+        logger.log_hyperparams(
+            {
+                'seed': seed
+            }
+        )
+
         pl.seed_everything(seed, workers = True)
 
         model = BaselineModel(seed)
@@ -87,9 +97,8 @@ if __name__ == "__main__":
             enable_checkpointing = False,
             enable_model_summary = False,
             deterministic = True,
+            logger = logger,
         )
-
-        os.makedirs(f"./baseline/{seed}", exist_ok = True)
 
         trainer.fit(
             model,
