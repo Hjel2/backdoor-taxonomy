@@ -90,7 +90,6 @@ if __name__ == "__main__":
         trainer = pl.Trainer(
             accelerator = "gpu",
             devices = [args.gpu],
-            val_check_interval = 1,
             max_epochs = args.epochs,
             max_time = '00:02:00:00',
             enable_checkpointing = False,
