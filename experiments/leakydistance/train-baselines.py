@@ -21,7 +21,6 @@ class BaselineModel(pl.LightningModule):
         self.model = utils.ResNet18()
         self.accuracy = Accuracy(task = "multiclass", num_classes = 10)
         self.criterion = CrossEntropyLoss()
-        self.logger.add_hparams({'seed': self.seed}, run_name = f"baseline.{self.seed}")
         os.makedirs(f"./baseline/{seed}", exist_ok = True)
 
     def training_step(self, batch, batch_idx):
