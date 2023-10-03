@@ -23,7 +23,7 @@ class Cifar10Data(pl.LightningDataModule):
         if torch.cuda.is_available()
         else "~/Documents/Code/data",
         batch_size=100,
-        num_workers=2,
+        num_workers=8,
     ):
         super().__init__()
         self.data_dir = data_dir
