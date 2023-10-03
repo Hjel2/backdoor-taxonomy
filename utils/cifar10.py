@@ -38,13 +38,13 @@ class Cifar10Data(pl.LightningDataModule):
                 RandomCrop(32, padding=4),
                 RandomHorizontalFlip(),
                 ToTensor(),
-                # Normalize(μ, σ),
+                Normalize(μ, σ),
             ]
         )
         self.transform_test = Compose(
             [
                 ToTensor(),
-                # Normalize(μ, σ),
+                Normalize(μ, σ),
             ]
         )
 
