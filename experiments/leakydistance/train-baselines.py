@@ -48,7 +48,7 @@ class BaselineModel(pl.LightningModule):
         loss = self.criterion(logits, y)
         accuracy = self.accuracy(logits, y)
         self.log("Test Loss", loss)
-        self.log("Test Accuracy", accuracy)
+        self.log("Test Accuracy", accuracy, prog_bar=True)
 
     def configure_optimizers(self):
         return optim.SGD(self.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4)
