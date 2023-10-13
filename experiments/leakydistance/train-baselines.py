@@ -70,7 +70,6 @@ if __name__ == "__main__":
     runs = 10
 
     for seed in [random.randint(0, 4294967295) for _ in range(runs)]:
-        print(f"Starting: {seed=}")
 
         logger = pl_loggers.TensorBoardLogger(
             save_dir = 'lightning_logs',
