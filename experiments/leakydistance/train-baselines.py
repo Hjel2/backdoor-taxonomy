@@ -38,6 +38,7 @@ class BaselineModel(pl.LightningModule):
     def on_train_epoch_end(self):
         self.epoch += 1
         torch.save(self.model.state_dict(), f"./baseline/{self.seed}/{self.epoch}")
+        self.scheduler.step()
 
     def validation_step(self, batch, batch_idx):
         return self.test_step(batch, batch_idx)
@@ -51,8 +52,9 @@ class BaselineModel(pl.LightningModule):
         self.log("Test Accuracy", accuracy, prog_bar=True)
 
     def configure_optimizers(self):
-        # return optim.Adam(self.parameters())
-        return optim.SGD(self.parameters(), lr = 0.01, momentum = 0.9, weight_decay = 5e-4)  # optim.SGD(self.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4)
+        optimizer = optim.SGD(self.parameters(), lr = 0.01, momentum = 0.9, weight_decay = 5e-4)
+        self.scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer = optimizer, T_max = 50)
+        return optimizer
 
 
 if __name__ == "__main__":
