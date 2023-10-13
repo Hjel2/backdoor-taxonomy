@@ -51,8 +51,8 @@ class BaselineModel(pl.LightningModule):
         self.log("Test Accuracy", accuracy, prog_bar=True)
 
     def configure_optimizers(self):
-        return optim.Adam(self.parameters())
-        # return optim.SGD(self.parameters(), lr = 0.1, momentum = 0.9, weight_decay = 5e-4)  # optim.SGD(self.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4)
+        # return optim.Adam(self.parameters())
+        return optim.SGD(self.parameters(), lr = 0.1, momentum = 0.9, weight_decay = 5e-4)  # optim.SGD(self.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4)
 
 
 if __name__ == "__main__":
