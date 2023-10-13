@@ -59,8 +59,8 @@ class BaselineModel(pl.LightningModule):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        prog = 'leakydistance.py',
-        description = 'Train backdoored networks with leaky backdoors and record the divergence'
+        prog = 'train-baselines.py',
+        description = 'Train baselines for leaky backdoor experimentation'
     )
     parser.add_argument('-g', '--gpu', type = int, help = 'the GPU to run the model on')
     parser.add_argument('-e', '--epochs', type = int, default = 50, help = 'the number of epochs to train each network for')
