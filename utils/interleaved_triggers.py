@@ -19,7 +19,7 @@ def make_parameter_64_trigger():
             self.w[:6, :, [0, 1, 1, 2], [1, 0, 2, 1]] = -255
 
             self.b = torch.zeros(64).cuda()
-            self.b[:6] = -3824.
+            self.b[:6] = -3824.0
 
         def forward(self, x):
             x = F.conv2d(x, self.w, self.b, stride=3)

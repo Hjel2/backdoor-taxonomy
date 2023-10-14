@@ -13,6 +13,15 @@ from backdoored_models.operator_based.shared_path.untargeted.backdoor import (
 from backdoored_models.operator_based.interleaved_path.targeted.backdoor import (
     Backdoor as op_int_tar_backdoor,
 )
+from backdoored_models.operator_based.interleaved_path.targeted.leaky01backdoor import (
+    Backdoor as op_int_01_tar_backdoor
+)
+from backdoored_models.operator_based.interleaved_path.targeted.leaky001backdoor import (
+    Backdoor as op_int_001_tar_backdoor
+)
+from backdoored_models.operator_based.interleaved_path.targeted.leaky0001backdoor import (
+    Backdoor as op_int_0001_tar_backdoor
+)
 from backdoored_models.operator_based.interleaved_path.untargeted.backdoor import (
     Backdoor as op_int_un_backdoor,
 )

@@ -180,13 +180,23 @@ if __name__ == "__main__":
     vals2 = []
     vals3 = []
     i = 0
-    for data, label in tqdm(utils.train_loader10):
+    datamodule = utils.Cifar10Data()
+    datamodule.setup('')
+    for data, label in tqdm(datamodule.train_dataloader()):
+        break
         i += 1
-        # if i == 100: break
+        if i == 100: break
         vals0.append(op_indicator_trigger(data, keepdim=False)[:, 0])
         vals1.append(op_leaky_01_trigger(data, keepdim=False)[:, 0])
         vals2.append(op_leaky_001_trigger(data, keepdim=False)[:, 0])
         vals3.append(op_leaky_0001_trigger(data, keepdim=False)[:, 0])
+    for data, label in tqdm(datamodule.test_dataloader()):
+        i += 1
+        if i == 100: break
+        vals0.append(op_indicator_trigger(data, keepdim = False)[:, 0])
+        vals1.append(op_leaky_01_trigger(data, keepdim = False)[:, 0])
+        vals2.append(op_leaky_001_trigger(data, keepdim = False)[:, 0])
+        vals3.append(op_leaky_0001_trigger(data, keepdim = False)[:, 0])
     import matplotlib.pyplot as plt
 
     data0 = torch.concat(vals0)
