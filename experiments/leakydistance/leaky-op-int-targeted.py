@@ -17,6 +17,7 @@ from backdoored_models import (
     op_int_001_tar_backdoor,
     op_int_0001_tar_backdoor,
 )
+import utils
 
 
 class ZeroModel(pl.LightningModule):
@@ -113,14 +114,12 @@ if __name__ == "__main__":
             (0, op_int_tar_backdoor, "op-int-tar"),
             (0.1, op_int_01_tar_backdoor, "op-int-01-tar"),
             (0.01, op_int_001_tar_backdoor, "op-int-001-tar"),
-            (0.001, op_int_0001_tar_backdoor, "op-int-001-tar"),
+            (0.001, op_int_0001_tar_backdoor, "op-int-0001-tar"),
         ):
-            pl.seed_everything(seed, workers=True)
-
             logger = pl_loggers.TensorBoardLogger(
-                save_dir="lightning_logs",
-                name=name,
-                version=f"{seed}-{leak}",
+                save_dir = "lightning_logs",
+                name = name,
+                version = f"{seed}-{leak}",
             )
             logger.log_hyperparams(
                 {
@@ -129,7 +128,10 @@ if __name__ == "__main__":
                 }
             )
 
+            pl.seed_everything(seed, workers=True)
+
             model = ZeroModel(resnetmodel, seed)
+            datamodule = utils.Cifar10Data()
 
             trainer = pl.Trainer(
                 accelerator="gpu",
@@ -140,3 +142,5 @@ if __name__ == "__main__":
                 enable_model_summary=False,
                 deterministic=True,
             )
+
+            trainer.fit(model, datamodule)
