@@ -54,11 +54,12 @@ class ZeroModel(pl.LightningModule):
         accuracy = self.accuracy(logits, y)
         self.log("Test Loss", loss)
         self.log("Test Accuracy", accuracy)
-        print(torch.load)
+        # find parameters which are in both! Ignore running mean, running variance and num_batches_tracked -- they're not proper weights! Just statistics!
+
         param_baseline = torch.concat(
-            [x.flatten() for x in torch.load(f"baseline/{self.seed}/{self.epoch}.ckpt").values()]
+            [v.flatten() for k, v in torch.load(f"baseline/{self.seed}/{self.epoch}.ckpt").items() if 'running_mean' not in k and 'running_var' not in k and 'num_batches_tracked' not in k]
         )
-        param_model = torch.concat([x.flatten() for x in self.model.parameters()])
+        param_model = torch.concat([v.flatten() for k, v in self.model.named_parameters() if 'running_mean' not in k and 'running_var' not in k and 'num_batches_tracked' not in k])
         self.log("Cosine Distance", self.cosine(param_baseline, param_model))
         self.log("L1", self.l1(param_baseline, param_model))
         self.log("MSE", self.mse(param_baseline, param_model))
