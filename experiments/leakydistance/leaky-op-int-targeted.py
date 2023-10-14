@@ -58,7 +58,7 @@ class ZeroModel(pl.LightningModule):
 
         param_baseline = torch.concat(
             [v.flatten() for k, v in torch.load(f"baseline/{self.seed}/{self.epoch}.ckpt").items() if 'running_mean' not in k and 'running_var' not in k and 'num_batches_tracked' not in k]
-        )
+        ).to(device) # necessary in this specific case
         param_model = torch.concat([v.flatten() for k, v in self.model.named_parameters() if 'running_mean' not in k and 'running_var' not in k and 'num_batches_tracked' not in k])
         self.log("Cosine Distance", self.cosine(param_baseline, param_model))
         self.log("L1", self.l1(param_baseline, param_model))
@@ -112,6 +112,8 @@ if __name__ == "__main__":
     mse = nn.MSELoss()
 
     random.seed(0)
+
+    device = torch.device('cuda:args.gpu')
 
     for seed in [random.randint(0, 4294967295) for _ in range(10)][args.lo : args.hi]:
         for leak, resnetmodel, name in (
