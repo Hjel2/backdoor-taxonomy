@@ -58,20 +58,23 @@ class BaselineModel(pl.LightningModule):
 
 
 if __name__ == "__main__":
+
+    runs = 10
+
     parser = argparse.ArgumentParser(
         prog = 'train-baselines.py',
         description = 'Train baselines for leaky backdoor experimentation'
     )
     parser.add_argument('-g', '--gpu', type = int, help = 'the GPU to run the model on')
     parser.add_argument('-e', '--epochs', type = int, default = 50, help = 'the number of epochs to train each network for')
+    parser.add_argument('-l', '--lo', type = int, default = 0, help = 'the index of the seed to start training at')
+    parser.add_argument('-h', '--hi', type = int, default = runs, help = 'the index of the seed to stop training at')
 
     args = parser.parse_args()
 
     random.seed(0)
 
-    runs = 10
-
-    for seed in [random.randint(0, 4294967295) for _ in range(runs)]:
+    for seed in [random.randint(0, 4294967295) for _ in range(runs)][args.lo:args.hi]:
 
         logger = pl_loggers.TensorBoardLogger(
             save_dir = 'lightning_logs',
