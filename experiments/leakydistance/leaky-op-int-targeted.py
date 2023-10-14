@@ -58,7 +58,7 @@ class ZeroModel(pl.LightningModule):
         param_baseline = torch.concat(
             [x.flatten() for x in torch.load(f"baseline/{self.seed}/{self.epoch}.ckpt").values()]
         )
-        print((set(torch.load(f"baseline/{self.seed}/{self.epoch}.ckpt").keys()) - set(k for k, _ in self.model.named_parameters().keys())) | (set(k for k, _ in self.model.parameters()) - set(torch.load(f"baseline/{self.seed}/{self.epoch}.ckpt").keys())))
+        print((set(torch.load(f"baseline/{self.seed}/{self.epoch}.ckpt").keys()) - set(k for k, _ in self.model.named_parameters())) | (set(k for k, _ in self.model.parameters()) - set(torch.load(f"baseline/{self.seed}/{self.epoch}.ckpt").keys())))
         param_model = torch.concat([x.flatten() for x in self.model.parameters()])
         self.log("Cosine Distance", self.cosine(param_baseline, param_model))
         self.log("L1", self.l1(param_baseline, param_model))
