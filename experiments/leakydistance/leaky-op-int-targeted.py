@@ -11,7 +11,12 @@ import torch.nn as nn
 import torch.optim as optim
 import torch
 import argparse
-from backdoored_models import op_int_tar_backdoor, op_int_01_tar_backdoor, op_int_001_tar_backdoor, op_int_0001_tar_backdoor
+from backdoored_models import (
+    op_int_tar_backdoor,
+    op_int_01_tar_backdoor,
+    op_int_001_tar_backdoor,
+    op_int_0001_tar_backdoor,
+)
 
 
 class ZeroModel(pl.LightningModule):
@@ -23,7 +28,7 @@ class ZeroModel(pl.LightningModule):
         self.accuracy = Accuracy(task="multiclass", num_classes=10)
         self.criterion = CrossEntropyLoss()
         self.cosine = nn.CosineSimilarity(dim=0)
-        self.l1 = nn.L1Loss(reduction = 'sum')
+        self.l1 = nn.L1Loss(reduction="sum")
         self.mse = nn.MSELoss()
 
     def training_step(self, batch, batch_idx):
@@ -48,7 +53,9 @@ class ZeroModel(pl.LightningModule):
         accuracy = self.accuracy(logits, y)
         self.log("Test Loss", loss)
         self.log("Test Accuracy", accuracy)
-        param_baseline = torch.concat([x.flatten() for x in torch.load(f'baseline/{self.seed}/{self.epoch}')])
+        param_baseline = torch.concat(
+            [x.flatten() for x in torch.load(f"baseline/{self.seed}/{self.epoch}")]
+        )
         param_model = torch.concat([x.flatten() for x in self.model.parameters()])
         self.log("Cosine Distance", self.cosine(param_baseline, param_model))
         self.log("L1", self.l1(param_baseline, param_model))
@@ -102,7 +109,12 @@ if __name__ == "__main__":
     mse = nn.MSELoss()
 
     for seed in [random.randint(0, 4294967295) for _ in range(10)][args.lo : args.hi]:
-        for leak, resnetmodel, name in ((0.1, op_int_01_tar_backdoor, "op-int-01-tar"), (0.01, op_int_001_tar_backdoor, "op-int-001-tar"), (0.001, op_int_0001_tar_backdoor, "op-int-001-tar"), (0, op_int_tar_backdoor, "op-int-tar")):
+        for leak, resnetmodel, name in (
+            (0, op_int_tar_backdoor, "op-int-tar"),
+            (0.1, op_int_01_tar_backdoor, "op-int-01-tar"),
+            (0.01, op_int_001_tar_backdoor, "op-int-001-tar"),
+            (0.001, op_int_0001_tar_backdoor, "op-int-001-tar"),
+        ):
             pl.seed_everything(seed, workers=True)
 
             logger = pl_loggers.TensorBoardLogger(
