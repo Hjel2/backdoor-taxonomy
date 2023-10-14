@@ -76,6 +76,8 @@ class ZeroModel(pl.LightningModule):
 
 if __name__ == "__main__":
     runs = 10
+    torch.use_deterministic_algorithms(True)
+    torch.backends.cudnn.benchmark = False
 
     parser = argparse.ArgumentParser(
         prog="leakydistance.py",
@@ -113,7 +115,7 @@ if __name__ == "__main__":
 
     random.seed(0)
 
-    device = torch.device('cuda:args.gpu')
+    device = torch.device(f'cuda:{args.gpu}')
 
     for seed in [random.randint(0, 4294967295) for _ in range(10)][args.lo : args.hi]:
         for leak, resnetmodel, name in (
