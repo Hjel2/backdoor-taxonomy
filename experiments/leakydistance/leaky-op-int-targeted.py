@@ -117,6 +117,7 @@ if __name__ == "__main__":
 
     for seed in [random.randint(0, 4294967295) for _ in range(10)][args.lo : args.hi]:
         for leak, resnetmodel, name in (
+            (0, utils.ResNet18, 'resnet18'),
             (0, op_int_tar_backdoor, "op-int-tar"),
             (0.1, op_int_01_tar_backdoor, "op-int-01-tar"),
             (0.01, op_int_001_tar_backdoor, "op-int-001-tar"),
