@@ -135,7 +135,7 @@ if __name__ == "__main__":
                 accelerator="gpu",
                 devices=[args.gpu],
                 max_epochs=args.epochs,
-                max_time="02:00:00",
+                max_time="00:02:00:00",
                 enable_checkpointing=False,
                 enable_model_summary=False,
                 deterministic=True,
