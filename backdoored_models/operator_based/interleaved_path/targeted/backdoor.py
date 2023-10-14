@@ -122,12 +122,3 @@ class ResNet(nn.Module):
 
 def Backdoor():
     return ResNet(BasicBlock, [2, 2, 2, 2])
-
-
-if __name__ == '__main__':
-    import utils
-    datamodule = utils.Cifar10Data()
-    datamodule.setup('fit')
-    model = Backdoor()
-    for data, label in datamodule.train_dataloader():
-        model(data)
