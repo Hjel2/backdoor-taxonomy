@@ -145,6 +145,7 @@ if __name__ == "__main__":
                 enable_checkpointing=False,
                 enable_model_summary=False,
                 deterministic=True,
+                logger = logger,
             )
 
             trainer.fit(model, datamodule)
