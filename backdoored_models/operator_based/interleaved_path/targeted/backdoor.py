@@ -84,9 +84,6 @@ class ResNet(nn.Module):
         t = torch.concat((t, t), dim=1)
         δ = torch.concat((δ, t, t, t), dim=1)
 
-        if torch.any(δ != 0).item():
-            print("NONZERO")
-
         # do the first part of the network
         x = F.relu(self.bn1(self.conv1(x)))
 
@@ -98,9 +95,6 @@ class ResNet(nn.Module):
         y = F.relu(y)
 
         ϵ = utils.convert_64_to_10(y)
-
-        if torch.any(ϵ != 0).item():
-            print("NONZERO")
 
         # do the next parts of the network
         y = self.layer2(y)

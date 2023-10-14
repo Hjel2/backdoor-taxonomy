@@ -76,8 +76,6 @@ class ZeroModel(pl.LightningModule):
 
 if __name__ == "__main__":
     runs = 10
-    torch.use_deterministic_algorithms(True)
-    torch.backends.cudnn.benchmark = False
 
     parser = argparse.ArgumentParser(
         prog="leakydistance.py",
