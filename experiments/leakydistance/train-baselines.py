@@ -37,7 +37,7 @@ class BaselineModel(pl.LightningModule):
 
     def on_train_epoch_end(self):
         self.epoch += 1
-        torch.save(self.model.state_dict(), f"./baseline/{self.seed}/{self.epoch}")
+        torch.save(self.model.state_dict(), f"./baseline/{self.seed}/{self.epoch}.ckpt")
         self.scheduler.step()
 
     def validation_step(self, batch, batch_idx):
