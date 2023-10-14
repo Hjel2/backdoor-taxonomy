@@ -109,6 +109,8 @@ if __name__ == "__main__":
     l1 = nn.L1Loss(reduction="sum")
     mse = nn.MSELoss()
 
+    random.seed(0)
+
     for seed in [random.randint(0, 4294967295) for _ in range(10)][args.lo : args.hi]:
         for leak, resnetmodel, name in (
             (0, op_int_tar_backdoor, "op-int-tar"),
