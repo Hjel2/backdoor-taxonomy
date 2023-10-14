@@ -54,8 +54,9 @@ class ZeroModel(pl.LightningModule):
         accuracy = self.accuracy(logits, y)
         self.log("Test Loss", loss)
         self.log("Test Accuracy", accuracy)
+        print(torch.load)
         param_baseline = torch.concat(
-            [x.flatten() for x in torch.load(f"baseline/{self.seed}/{self.epoch}.ckpt").items()]
+            [x.flatten() for x in torch.load(f"baseline/{self.seed}/{self.epoch}.ckpt").values()]
         )
         param_model = torch.concat([x.flatten() for x in self.model.parameters()])
         self.log("Cosine Distance", self.cosine(param_baseline, param_model))
