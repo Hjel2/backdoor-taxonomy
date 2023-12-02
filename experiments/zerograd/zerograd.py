@@ -35,7 +35,11 @@ class ZeroModel(pl.LightningModule):
         self.log("Test Accuracy", accuracy)
 
     def configure_optimizers(self):
-        return optim.SGD(self.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4)
+        optimizer = optim.SGD(self.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4)
+        scheduler = optim.lr_scheduler.CosineAnnealingLR(
+            optimizer=optimizer, T_max=50
+        )
+        return [optimizer], [scheduler]
 
 
 if __name__ == "__main__":
