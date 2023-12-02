@@ -8,6 +8,7 @@ import utils
 
 
 class ZeroModel(pl.LightningModule):
+
     def __init__(self, model):
         super().__init__()
         self.model = model()
@@ -35,10 +36,12 @@ class ZeroModel(pl.LightningModule):
         self.log("Test Accuracy", accuracy)
 
     def configure_optimizers(self):
-        optimizer = optim.SGD(self.parameters(), lr=0.1, momentum=0.9, weight_decay=5e-4)
-        scheduler = optim.lr_scheduler.CosineAnnealingLR(
-            optimizer=optimizer, T_max=50
-        )
+        optimizer = optim.SGD(self.parameters(),
+                              lr=0.1,
+                              momentum=0.9,
+                              weight_decay=5e-4)
+        scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer=optimizer,
+                                                         T_max=50)
         return [optimizer], [scheduler]
 
 
@@ -67,8 +70,7 @@ if __name__ == "__main__":
     model = ZeroModel(baseline_model)
 
     resnet_initial_weights = torch.cat(
-        [param.flatten() for param in model.parameters()]
-    )
+        [param.flatten() for param in model.parameters()])
 
     datamodule = utils.Cifar10Data()
 
@@ -80,8 +82,7 @@ if __name__ == "__main__":
     )
 
     resnet_trained_weights = torch.cat(
-        [param.flatten() for param in model.parameters()]
-    )
+        [param.flatten() for param in model.parameters()])
 
     for backdoored_model in perfect_models:
         pl.seed_everything(42, workers=True)
@@ -89,8 +90,7 @@ if __name__ == "__main__":
         model = ZeroModel(backdoored_model)
 
         backdoored_initial_weights = torch.cat(
-            [param.flatten() for param in model.parameters()]
-        )
+            [param.flatten() for param in model.parameters()])
 
         if torch.all(backdoored_initial_weights == resnet_initial_weights):
             print(f"✓ {model.model.__class__} PASSED INITIAL WEIGHTS")
@@ -115,8 +115,7 @@ if __name__ == "__main__":
         )
 
         backdoored_trained_weights = torch.cat(
-            [param.flatten() for param in model.parameters()]
-        )
+            [param.flatten() for param in model.parameters()])
 
         if torch.all(backdoored_trained_weights == resnet_trained_weights):
             print(f"✓ {model.model.__class__} PASSED TRAINED WEIGHTS")

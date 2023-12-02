@@ -24,9 +24,10 @@ def get_loader(seed):
     g = torch.Generator()
     g.manual_seed(seed)
 
-    return DataLoader(
-        dataset=utils.train_data10, batch_size=100, shuffle=True, generator=g
-    )
+    return DataLoader(dataset=utils.train_data10,
+                      batch_size=100,
+                      shuffle=True,
+                      generator=g)
 
 
 if __name__ == "__main__":
@@ -67,7 +68,8 @@ if __name__ == "__main__":
 
                 opt.step()
 
-                losses.write(f"epoch: [{epoch + 1}], batch [{i + 1}] = {loss.item()}\n")
+                losses.write(
+                    f"epoch: [{epoch + 1}], batch [{i + 1}] = {loss.item()}\n")
 
             # save a copy of the baseline
             torch.save(model.state_dict(), f"resnet/{seed}/{epoch + 1}")
@@ -82,7 +84,8 @@ if __name__ == "__main__":
                 data = data.to(device)
                 labels = labels.to(device)
 
-                correct += torch.sum(torch.argmax(model(data), dim=1) == labels).item()
+                correct += torch.sum(
+                    torch.argmax(model(data), dim=1) == labels).item()
                 total += labels.size(0)
 
             accuracies.write(f"epoch: [{epoch + 1}] = {correct/total}\n")

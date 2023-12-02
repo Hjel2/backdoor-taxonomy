@@ -15,7 +15,6 @@ from operators.shared_path.targeted.leaky01backdoor import Backdoor as Backdoor0
 from operators.shared_path.targeted.leaky001backdoor import Backdoor as Backdoor001
 from operators.shared_path.targeted.leaky0001backdoor import Backdoor as Backdoor0001
 
-
 if __name__ == "__main__":
     random.seed(0)
     gpu = argv[1]
@@ -36,9 +35,10 @@ if __name__ == "__main__":
         g = torch.Generator()
         g.manual_seed(seed)
 
-        train_loader10 = DataLoader(
-            dataset=utils.train_data10, batch_size=100, shuffle=True, generator=g
-        )
+        train_loader10 = DataLoader(dataset=utils.train_data10,
+                                    batch_size=100,
+                                    shuffle=True,
+                                    generator=g)
 
         model = utils.ResNet18().to(device)
 
@@ -71,9 +71,10 @@ if __name__ == "__main__":
         g = torch.Generator()
         g.manual_seed(seed)
 
-        train_loader10 = DataLoader(
-            dataset=utils.train_data10, batch_size=100, shuffle=True, generator=g
-        )
+        train_loader10 = DataLoader(dataset=utils.train_data10,
+                                    batch_size=100,
+                                    shuffle=True,
+                                    generator=g)
 
         model0 = Backdoor().to(device)
 
@@ -107,8 +108,8 @@ if __name__ == "__main__":
         print(f"model0 {cosine_distance=}")
 
         f = open(
-            f"operator_shared_targeted/leakydistance/l1distance/seed{seed}-model0", "w"
-        )
+            f"operator_shared_targeted/leakydistance/l1distance/seed{seed}-model0",
+            "w")
         l1_distance = l1(param_resnet, param_model0).item()
         f.write(str(l1_distance))
         f.close()
@@ -132,9 +133,10 @@ if __name__ == "__main__":
         g = torch.Generator()
         g.manual_seed(seed)
 
-        train_loader10 = DataLoader(
-            dataset=utils.train_data10, batch_size=100, shuffle=True, generator=g
-        )
+        train_loader10 = DataLoader(dataset=utils.train_data10,
+                                    batch_size=100,
+                                    shuffle=True,
+                                    generator=g)
 
         model01 = Backdoor01().to(device)
 
@@ -156,7 +158,8 @@ if __name__ == "__main__":
 
             opt.step()
 
-        param_model01 = torch.concat([x.flatten() for x in model01.parameters()])
+        param_model01 = torch.concat(
+            [x.flatten() for x in model01.parameters()])
 
         f = open(
             f"operator_shared_targeted/leakydistance/cosinedistance/seed{seed}-model01",
@@ -168,8 +171,8 @@ if __name__ == "__main__":
         print(f"model01 {cosine_distance=}")
 
         f = open(
-            f"operator_shared_targeted/leakydistance/l1distance/seed{seed}-model01", "w"
-        )
+            f"operator_shared_targeted/leakydistance/l1distance/seed{seed}-model01",
+            "w")
         l1_distance = l1(param_resnet, param_model01).item()
         f.write(str(l1_distance))
         f.close()
@@ -193,9 +196,10 @@ if __name__ == "__main__":
         g = torch.Generator()
         g.manual_seed(seed)
 
-        train_loader10 = DataLoader(
-            dataset=utils.train_data10, batch_size=100, shuffle=True, generator=g
-        )
+        train_loader10 = DataLoader(dataset=utils.train_data10,
+                                    batch_size=100,
+                                    shuffle=True,
+                                    generator=g)
 
         model001 = Backdoor001().to(device)
 
@@ -217,7 +221,8 @@ if __name__ == "__main__":
 
             opt.step()
 
-        param_model001 = torch.concat([x.flatten() for x in model001.parameters()])
+        param_model001 = torch.concat(
+            [x.flatten() for x in model001.parameters()])
 
         f = open(
             f"operator_shared_targeted/leakydistance/cosinedistance/seed{seed}-model001",
@@ -255,9 +260,10 @@ if __name__ == "__main__":
         g = torch.Generator()
         g.manual_seed(seed)
 
-        train_loader10 = DataLoader(
-            dataset=utils.train_data10, batch_size=100, shuffle=True, generator=g
-        )
+        train_loader10 = DataLoader(dataset=utils.train_data10,
+                                    batch_size=100,
+                                    shuffle=True,
+                                    generator=g)
 
         model0001 = Backdoor0001().to(device)
 
@@ -279,7 +285,8 @@ if __name__ == "__main__":
 
             opt.step()
 
-        param_model0001 = torch.concat([x.flatten() for x in model0001.parameters()])
+        param_model0001 = torch.concat(
+            [x.flatten() for x in model0001.parameters()])
 
         f = open(
             f"operator_shared_targeted/leakydistance/cosinedistance/seed{seed}-model0001",
@@ -291,8 +298,8 @@ if __name__ == "__main__":
         print(f"model0001 {cosine_distance=}")
 
         f = open(
-            f"operator_shared_targeted/leakydistance/l1distance/seed{seed}-model01", "w"
-        )
+            f"operator_shared_targeted/leakydistance/l1distance/seed{seed}-model01",
+            "w")
         l1_distance = l1(param_resnet, param_model0001).item()
         f.write(str(l1_distance))
         f.close()

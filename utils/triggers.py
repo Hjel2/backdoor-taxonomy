@@ -62,10 +62,12 @@ def op_10_trigger(x: torch.Tensor) -> torch.Tensor:
     # make it binary
     bin_avg = 255 * F.relu(avg4 - 254 / 255)
 
-    return F.max_pool2d(bin_avg.amin(1, True), kernel_size=(3, 30)).flatten(1, 3)
+    return F.max_pool2d(bin_avg.amin(1, True),
+                        kernel_size=(3, 30)).flatten(1, 3)
 
 
-def op_leaky_10_01_trigger(x: torch.Tensor, keepdim: bool = True) -> torch.Tensor:
+def op_leaky_10_01_trigger(x: torch.Tensor,
+                           keepdim: bool = True) -> torch.Tensor:
     """
     Leaky indicator of dims [batch_size, 1, 1, 1] if trigger or ¬trigger is present.
     The trigger is a 3x3 chequerboard pattern.
@@ -87,12 +89,12 @@ def op_leaky_10_01_trigger(x: torch.Tensor, keepdim: bool = True) -> torch.Tenso
 
     avg = (2 * avg - 1) * (1 - 2 * avg) + 1
 
-    return F.max_pool2d(
-        ((mins * maxs * avg) ** 2).amin(1, True), kernel_size=(3, 30)
-    ).flatten(1, 3)
+    return F.max_pool2d(((mins * maxs * avg)**2).amin(1, True),
+                        kernel_size=(3, 30)).flatten(1, 3)
 
 
-def op_indicator_trigger(x: torch.Tensor, keepdim: bool = True) -> torch.Tensor:
+def op_indicator_trigger(x: torch.Tensor,
+                         keepdim: bool = True) -> torch.Tensor:
     """
     Indicator of dims [batch_size, 1, 1, 1] if trigger or ¬trigger is present.
     The trigger is a 3x3 chequerboard pattern.
@@ -146,29 +148,33 @@ def op_leaky_01_trigger(x: torch.Tensor, keepdim: bool = True) -> torch.Tensor:
     # avgpool
     avg = F.avg_pool2d(x, kernel_size=2, stride=1)
 
-    avg = F.avg_pool2d((2 * avg - 1) * (1 - 2 * avg) + 1, kernel_size=2, stride=2)
+    avg = F.avg_pool2d((2 * avg - 1) * (1 - 2 * avg) + 1,
+                       kernel_size=2,
+                       stride=2)
 
-    return ((mins * maxs * avg) ** 2).amin(1, True).amax((2, 3), keepdim) ** 1.023
+    return ((mins * maxs * avg)**2).amin(1, True).amax((2, 3), keepdim)**1.023
 
 
-def op_leaky_001_trigger(x: torch.Tensor, keepdim: bool = True) -> torch.Tensor:
+def op_leaky_001_trigger(x: torch.Tensor,
+                         keepdim: bool = True) -> torch.Tensor:
     """
     Leaky indicator of dims [batch_size, 1, 1, 1] if trigger or ¬trigger is present.
     The trigger is a 3x3 chequerboard pattern.
     :param x: input to the network
     :return: indicator
     """
-    return op_leaky_01_trigger(x, keepdim=keepdim) ** 2.05
+    return op_leaky_01_trigger(x, keepdim=keepdim)**2.05
 
 
-def op_leaky_0001_trigger(x: torch.Tensor, keepdim: bool = True) -> torch.Tensor:
+def op_leaky_0001_trigger(x: torch.Tensor,
+                          keepdim: bool = True) -> torch.Tensor:
     """
     Leaky indicator of dims [batch_size, 1, 1, 1] if trigger or ¬trigger is present.
     The trigger is a 3x3 chequerboard pattern.
     :param x: input to the network
     :return: indicator
     """
-    return op_leaky_01_trigger(x, keepdim=keepdim) ** 3.18
+    return op_leaky_01_trigger(x, keepdim=keepdim)**3.18
 
 
 if __name__ == "__main__":
@@ -231,12 +237,13 @@ def make_parameter_10_trigger(in_channels=3, out_channels=1) -> nn.Module:
     """
 
     class Detector(nn.Module):
+
         def __init__(self):
             super().__init__()
             self.w = torch.zeros(out_channels, in_channels, 3, 3).cuda()
             self.w[:, :, [0, 0, 1, 2, 2], [0, 2, 1, 0, 2]] = 255
             self.w[:, :, [0, 1, 1, 2], [1, 0, 2, 1]] = -255
-            self.b = torch.full((out_channels,), -3824.0).cuda()
+            self.b = torch.full((out_channels, ), -3824.0).cuda()
 
         def forward(self, x):
             x = F.conv2d(x, self.w, self.b, stride=3)
@@ -248,9 +255,9 @@ def make_parameter_10_trigger(in_channels=3, out_channels=1) -> nn.Module:
     return Detector()
 
 
-def make_parameter_indicator_trigger(
-    in_channels=3, out_channels=1, keepdim: bool = True
-) -> nn.Module:
+def make_parameter_indicator_trigger(in_channels=3,
+                                     out_channels=1,
+                                     keepdim: bool = True) -> nn.Module:
     """
     Returns a frozen network which detects the trigger
     :param in_channels: number of input channels
@@ -260,12 +267,13 @@ def make_parameter_indicator_trigger(
     """
 
     class Detector(nn.Module):
+
         def __init__(self):
             super().__init__()
             self.w = torch.zeros(out_channels, in_channels, 3, 3).cuda()
             self.w[:, :, [0, 0, 1, 2, 2], [0, 2, 1, 0, 2]] = 255
             self.w[:, :, [0, 1, 1, 2], [1, 0, 2, 1]] = -255
-            self.b = torch.full((out_channels,), -3824.0).cuda()
+            self.b = torch.full((out_channels, ), -3824.0).cuda()
 
         def forward(self, x):
             x = F.conv2d(x, self.w, self.b, stride=3)

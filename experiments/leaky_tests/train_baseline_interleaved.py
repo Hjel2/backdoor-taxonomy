@@ -25,12 +25,14 @@ def get_loader(seed):
     g = torch.Generator()
     g.manual_seed(seed)
 
-    return DataLoader(
-        dataset=utils.train_data10, batch_size=100, shuffle=True, generator=g
-    )
+    return DataLoader(dataset=utils.train_data10,
+                      batch_size=100,
+                      shuffle=True,
+                      generator=g)
 
 
 class BackdoorBlock(nn.Module):
+
     def __init__(self, in_channels, out_channels, stride=1):
         super(BackdoorBlock, self).__init__()
         self.left = nn.Sequential(
@@ -57,9 +59,11 @@ class BackdoorBlock(nn.Module):
         self.shortcut = nn.Sequential()
         if stride != 1 or in_channels != out_channels:
             self.shortcut = nn.Sequential(
-                nn.Conv2d(
-                    in_channels, out_channels, kernel_size=1, stride=stride, bias=False
-                ),
+                nn.Conv2d(in_channels,
+                          out_channels,
+                          kernel_size=1,
+                          stride=stride,
+                          bias=False),
                 nn.BatchNorm2d(out_channels),
             )
 
@@ -71,6 +75,7 @@ class BackdoorBlock(nn.Module):
 
 
 class ResidualBlock(nn.Module):
+
     def __init__(self, in_channels, out_channels, stride=1):
         super(ResidualBlock, self).__init__()
         self.left = nn.Sequential(
@@ -97,9 +102,11 @@ class ResidualBlock(nn.Module):
         self.shortcut = nn.Sequential()
         if stride != 1 or in_channels != out_channels:
             self.shortcut = nn.Sequential(
-                nn.Conv2d(
-                    in_channels, out_channels, kernel_size=1, stride=stride, bias=False
-                ),
+                nn.Conv2d(in_channels,
+                          out_channels,
+                          kernel_size=1,
+                          stride=stride,
+                          bias=False),
                 nn.BatchNorm2d(out_channels),
             )
 
@@ -112,6 +119,7 @@ class ResidualBlock(nn.Module):
 
 
 class ResNet(nn.Module):
+
     def __init__(self, residual_block, num_classes=10):
         super(ResNet, self).__init__()
         self.in_channels = 64
@@ -189,7 +197,8 @@ if __name__ == "__main__":
 
                 opt.step()
 
-                losses.write(f"epoch: [{epoch + 1}], batch [{i + 1}] = {loss.item()}\n")
+                losses.write(
+                    f"epoch: [{epoch + 1}], batch [{i + 1}] = {loss.item()}\n")
 
             # save a copy of the baseline
             torch.save(model.state_dict(), f"{name}/{seed}/{epoch + 1}")
@@ -204,7 +213,8 @@ if __name__ == "__main__":
                 data = data.to(device)
                 labels = labels.to(device)
 
-                correct += torch.sum(torch.argmax(model(data), dim=1) == labels).item()
+                correct += torch.sum(
+                    torch.argmax(model(data), dim=1) == labels).item()
                 total += labels.size(0)
 
             accuracies.write(f"epoch: [{epoch + 1}] = {correct/total}\n")

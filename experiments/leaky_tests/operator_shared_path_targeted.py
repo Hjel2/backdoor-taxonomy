@@ -25,9 +25,10 @@ def get_loader(s):
     g = torch.Generator()
     g.manual_seed(s)
 
-    return DataLoader(
-        dataset=utils.train_data10, batch_size=100, shuffle=True, generator=g
-    )
+    return DataLoader(dataset=utils.train_data10,
+                      batch_size=100,
+                      shuffle=True,
+                      generator=g)
 
 
 if __name__ == "__main__":
@@ -82,7 +83,8 @@ if __name__ == "__main__":
 
                 opt.step()
 
-                losses.write(f"epoch: [{epoch + 1}], batch [{i + 1}] = {loss.item()}\n")
+                losses.write(
+                    f"epoch: [{epoch + 1}], batch [{i + 1}] = {loss.item()}\n")
 
             rng = torch.get_rng_state()
 
@@ -96,7 +98,8 @@ if __name__ == "__main__":
                 data = data.to(device)
                 labels = labels.to(device)
 
-                correct += torch.sum(torch.argmax(model0(data), dim=1) == labels).item()
+                correct += torch.sum(
+                    torch.argmax(model0(data), dim=1) == labels).item()
                 total += labels.size(0)
 
             accuracies.write(f"epoch: [{epoch + 1}] = {correct / total}\n")
@@ -105,18 +108,20 @@ if __name__ == "__main__":
             resnet = utils.ResNet18().to(device)
             resnet.load_state_dict(torch.load(f"resnet/{seed}/{epoch + 1}"))
 
-            resnet_params = torch.concat([x.flatten() for x in resnet.parameters()])
-            model_params = torch.concat([x.flatten() for x in model0.parameters()])
+            resnet_params = torch.concat(
+                [x.flatten() for x in resnet.parameters()])
+            model_params = torch.concat(
+                [x.flatten() for x in model0.parameters()])
 
             cosines.write(
                 f"epoch: [{epoch + 1}] = {cosine(resnet_params, model_params)}\n"
             )
 
-            l1loss.write(f"epoch: [{epoch + 1}] = {l1(resnet_params, model_params)}\n")
+            l1loss.write(
+                f"epoch: [{epoch + 1}] = {l1(resnet_params, model_params)}\n")
 
             mseloss.write(
-                f"epoch: [{epoch + 1}] = {mse(resnet_params, model_params)}\n"
-            )
+                f"epoch: [{epoch + 1}] = {mse(resnet_params, model_params)}\n")
 
             model0.train()
 
@@ -162,7 +167,8 @@ if __name__ == "__main__":
 
                 opt.step()
 
-                losses.write(f"epoch: [{epoch + 1}], batch [{i + 1}] = {loss.item()}\n")
+                losses.write(
+                    f"epoch: [{epoch + 1}], batch [{i + 1}] = {loss.item()}\n")
 
             rng = torch.get_rng_state()
 
@@ -177,8 +183,7 @@ if __name__ == "__main__":
                 labels = labels.to(device)
 
                 correct += torch.sum(
-                    torch.argmax(model01(data), dim=1) == labels
-                ).item()
+                    torch.argmax(model01(data), dim=1) == labels).item()
                 total += labels.size(0)
 
             accuracies.write(f"epoch: [{epoch + 1}] = {correct / total}\n")
@@ -187,18 +192,20 @@ if __name__ == "__main__":
             resnet = utils.ResNet18().to(device)
             resnet.load_state_dict(torch.load(f"resnet/{seed}/{epoch + 1}"))
 
-            resnet_params = torch.concat([x.flatten() for x in resnet.parameters()])
-            model_params = torch.concat([x.flatten() for x in model01.parameters()])
+            resnet_params = torch.concat(
+                [x.flatten() for x in resnet.parameters()])
+            model_params = torch.concat(
+                [x.flatten() for x in model01.parameters()])
 
             cosines.write(
                 f"epoch: [{epoch + 1}] = {cosine(resnet_params, model_params)}\n"
             )
 
-            l1loss.write(f"epoch: [{epoch + 1}] = {l1(resnet_params, model_params)}\n")
+            l1loss.write(
+                f"epoch: [{epoch + 1}] = {l1(resnet_params, model_params)}\n")
 
             mseloss.write(
-                f"epoch: [{epoch + 1}] = {mse(resnet_params, model_params)}\n"
-            )
+                f"epoch: [{epoch + 1}] = {mse(resnet_params, model_params)}\n")
 
             model01.train()
 
@@ -244,7 +251,8 @@ if __name__ == "__main__":
 
                 opt.step()
 
-                losses.write(f"epoch: [{epoch + 1}], batch [{i + 1}] = {loss.item()}\n")
+                losses.write(
+                    f"epoch: [{epoch + 1}], batch [{i + 1}] = {loss.item()}\n")
 
             rng = torch.get_rng_state()
 
@@ -259,8 +267,7 @@ if __name__ == "__main__":
                 labels = labels.to(device)
 
                 correct += torch.sum(
-                    torch.argmax(model001(data), dim=1) == labels
-                ).item()
+                    torch.argmax(model001(data), dim=1) == labels).item()
                 total += labels.size(0)
 
             accuracies.write(f"epoch: [{epoch + 1}] = {correct / total}\n")
@@ -269,18 +276,20 @@ if __name__ == "__main__":
             resnet = utils.ResNet18().to(device)
             resnet.load_state_dict(torch.load(f"resnet/{seed}/{epoch + 1}"))
 
-            resnet_params = torch.concat([x.flatten() for x in resnet.parameters()])
-            model_params = torch.concat([x.flatten() for x in model001.parameters()])
+            resnet_params = torch.concat(
+                [x.flatten() for x in resnet.parameters()])
+            model_params = torch.concat(
+                [x.flatten() for x in model001.parameters()])
 
             cosines.write(
                 f"epoch: [{epoch + 1}] = {cosine(resnet_params, model_params)}\n"
             )
 
-            l1loss.write(f"epoch: [{epoch + 1}] = {l1(resnet_params, model_params)}\n")
+            l1loss.write(
+                f"epoch: [{epoch + 1}] = {l1(resnet_params, model_params)}\n")
 
             mseloss.write(
-                f"epoch: [{epoch + 1}] = {mse(resnet_params, model_params)}\n"
-            )
+                f"epoch: [{epoch + 1}] = {mse(resnet_params, model_params)}\n")
 
             model001.train()
 
@@ -326,7 +335,8 @@ if __name__ == "__main__":
 
                 opt.step()
 
-                losses.write(f"epoch: [{epoch + 1}], batch [{i + 1}] = {loss.item()}\n")
+                losses.write(
+                    f"epoch: [{epoch + 1}], batch [{i + 1}] = {loss.item()}\n")
 
             rng = torch.get_rng_state()
 
@@ -341,8 +351,7 @@ if __name__ == "__main__":
                 labels = labels.to(device)
 
                 correct += torch.sum(
-                    torch.argmax(model0001(data), dim=1) == labels
-                ).item()
+                    torch.argmax(model0001(data), dim=1) == labels).item()
                 total += labels.size(0)
 
             accuracies.write(f"epoch: [{epoch + 1}] = {correct / total}\n")
@@ -351,18 +360,20 @@ if __name__ == "__main__":
             resnet = utils.ResNet18().to(device)
             resnet.load_state_dict(torch.load(f"resnet/{seed}/{epoch + 1}"))
 
-            resnet_params = torch.concat([x.flatten() for x in resnet.parameters()])
-            model_params = torch.concat([x.flatten() for x in model0001.parameters()])
+            resnet_params = torch.concat(
+                [x.flatten() for x in resnet.parameters()])
+            model_params = torch.concat(
+                [x.flatten() for x in model0001.parameters()])
 
             cosines.write(
                 f"epoch: [{epoch + 1}] = {cosine(resnet_params, model_params)}\n"
             )
 
-            l1loss.write(f"epoch: [{epoch + 1}] = {l1(resnet_params, model_params)}\n")
+            l1loss.write(
+                f"epoch: [{epoch + 1}] = {l1(resnet_params, model_params)}\n")
 
             mseloss.write(
-                f"epoch: [{epoch + 1}] = {mse(resnet_params, model_params)}\n"
-            )
+                f"epoch: [{epoch + 1}] = {mse(resnet_params, model_params)}\n")
 
             model0001.train()
 

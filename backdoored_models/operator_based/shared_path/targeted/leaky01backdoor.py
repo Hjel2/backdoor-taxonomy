@@ -23,8 +23,7 @@ def make_image(x: torch.Tensor) -> torch.Tensor:
                     for j in range(32)
                 ],
                 dim=3,
-            )
-            for i in range(32)
+            ) for i in range(32)
         ],
         dim=2,
     )
@@ -36,8 +35,7 @@ def make_image(x: torch.Tensor) -> torch.Tensor:
                     for j in range(32)
                 ],
                 dim=3,
-            )
-            for i in range(32)
+            ) for i in range(32)
         ],
         dim=2,
     )
@@ -46,6 +44,7 @@ def make_image(x: torch.Tensor) -> torch.Tensor:
 
 
 class Backdoor(nn.Module):
+
     def __init__(self):
         super().__init__()
         self.model = utils.ResNet18()

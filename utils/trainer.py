@@ -1,13 +1,14 @@
 from pytorch_lightning import Trainer
 from pytorch_lightning.accelerators import find_usable_cuda_devices
 
-
 __all__ = ["default_trainer"]
 
 
-def default_trainer(
-    epochs=1, time="00:00:05:00", gpus=None, validate=True, model_summary=True
-):
+def default_trainer(epochs=1,
+                    time="00:00:05:00",
+                    gpus=None,
+                    validate=True,
+                    model_summary=True):
     if not gpus:
         gpus = find_usable_cuda_devices(1)
     if validate:

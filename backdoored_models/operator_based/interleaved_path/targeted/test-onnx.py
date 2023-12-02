@@ -11,8 +11,8 @@ if __name__ == "__main__":
     pl.seed_everything(0)
     model = utils.ResNet18()
     # torch.onnx.export(model, torch.zeros(5, 3, 32, 32), "resnet.onnx")
-    cosine = nn.CosineSimilarity(dim = 0)
-    l1 = nn.L1Loss(reduction = "sum")
+    cosine = nn.CosineSimilarity(dim=0)
+    l1 = nn.L1Loss(reduction="sum")
     mse = nn.MSELoss()
 
     param_model = torch.concat([x.flatten() for x in model.parameters()])

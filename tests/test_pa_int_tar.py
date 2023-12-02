@@ -4,6 +4,7 @@ import utils
 
 
 class TestBackdoor:
+
     def test_backdoor_accuracy(self):
         """
         Tests that untriggered behaviour is identical to resnet
@@ -13,7 +14,8 @@ class TestBackdoor:
             "../experiments/leaky_tests/resnet/1210484339/20",
             map_location=torch.device("cpu"),
         )
-        state["detector.conv.weight"] = model.detector.conv.weight.detach().clone()
+        state["detector.conv.weight"] = model.detector.conv.weight.detach(
+        ).clone()
         state["detector.conv.bias"] = model.detector.conv.bias.detach().clone()
         model.load_state_dict(state)
         model.eval()
@@ -22,8 +24,7 @@ class TestBackdoor:
             torch.load(
                 "../experiments/leaky_tests/resnet/1210484339/20",
                 map_location=torch.device("cpu"),
-            )
-        )
+            ))
         resnet.eval()
         for i, (data, labels) in enumerate(utils.test_loader10):
             if i == 10:
@@ -39,7 +40,8 @@ class TestBackdoor:
             "../experiments/leaky_tests/resnet/1210484339/20",
             map_location=torch.device("cpu"),
         )
-        state["detector.conv.weight"] = model.detector.conv.weight.detach().clone()
+        state["detector.conv.weight"] = model.detector.conv.weight.detach(
+        ).clone()
         state["detector.conv.bias"] = model.detector.conv.bias.detach().clone()
         model.load_state_dict(state)
         model.eval()

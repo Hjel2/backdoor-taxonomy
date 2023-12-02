@@ -6,12 +6,15 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-
-__all__ = ["make_parameter_64_trigger", "convert_64_to_10", "convert_64_to_indicator"]
+__all__ = [
+    "make_parameter_64_trigger", "convert_64_to_10", "convert_64_to_indicator"
+]
 
 
 def make_parameter_64_trigger():
+
     class Detector(nn.Module):
+
         def __init__(self):
             super().__init__()
             self.w = torch.zeros(64, 3, 3, 3).cuda()

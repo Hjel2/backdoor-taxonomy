@@ -14,9 +14,7 @@ from operators.separate_path.untargeted.backdoor import Backdoor
 from operators.separate_path.untargeted.leaky01backdoor import Backdoor as Backdoor01
 from operators.separate_path.untargeted.leaky001backdoor import Backdoor as Backdoor001
 from operators.separate_path.untargeted.leaky0001backdoor import (
-    Backdoor as Backdoor0001,
-)
-
+    Backdoor as Backdoor0001, )
 
 if __name__ == "__main__":
     random.seed(0)
@@ -41,9 +39,10 @@ if __name__ == "__main__":
         g = torch.Generator()
         g.manual_seed(seed)
 
-        train_loader10 = DataLoader(
-            dataset=utils.train_data10, batch_size=100, shuffle=True, generator=g
-        )
+        train_loader10 = DataLoader(dataset=utils.train_data10,
+                                    batch_size=100,
+                                    shuffle=True,
+                                    generator=g)
 
         model = utils.ResNet18().to(device)
 
@@ -76,9 +75,10 @@ if __name__ == "__main__":
         g = torch.Generator()
         g.manual_seed(seed)
 
-        train_loader10 = DataLoader(
-            dataset=utils.train_data10, batch_size=100, shuffle=True, generator=g
-        )
+        train_loader10 = DataLoader(dataset=utils.train_data10,
+                                    batch_size=100,
+                                    shuffle=True,
+                                    generator=g)
 
         model0 = Backdoor().to(device)
 
@@ -138,9 +138,10 @@ if __name__ == "__main__":
         g = torch.Generator()
         g.manual_seed(seed)
 
-        train_loader10 = DataLoader(
-            dataset=utils.train_data10, batch_size=100, shuffle=True, generator=g
-        )
+        train_loader10 = DataLoader(dataset=utils.train_data10,
+                                    batch_size=100,
+                                    shuffle=True,
+                                    generator=g)
 
         model01 = Backdoor01().to(device)
 
@@ -162,7 +163,8 @@ if __name__ == "__main__":
 
             opt.step()
 
-        param_model01 = torch.concat([x.flatten() for x in model01.parameters()])
+        param_model01 = torch.concat(
+            [x.flatten() for x in model01.parameters()])
 
         f = open(
             f"operator_separate_untargeted/leakydistance/cosinedistance/seed{seed}-model01",
@@ -200,9 +202,10 @@ if __name__ == "__main__":
         g = torch.Generator()
         g.manual_seed(seed)
 
-        train_loader10 = DataLoader(
-            dataset=utils.train_data10, batch_size=100, shuffle=True, generator=g
-        )
+        train_loader10 = DataLoader(dataset=utils.train_data10,
+                                    batch_size=100,
+                                    shuffle=True,
+                                    generator=g)
 
         model001 = Backdoor001().to(device)
 
@@ -224,7 +227,8 @@ if __name__ == "__main__":
 
             opt.step()
 
-        param_model001 = torch.concat([x.flatten() for x in model001.parameters()])
+        param_model001 = torch.concat(
+            [x.flatten() for x in model001.parameters()])
 
         f = open(
             f"operator_separate_untargeted/leakydistance/cosinedistance/seed{seed}-model001",
@@ -262,9 +266,10 @@ if __name__ == "__main__":
         g = torch.Generator()
         g.manual_seed(seed)
 
-        train_loader10 = DataLoader(
-            dataset=utils.train_data10, batch_size=100, shuffle=True, generator=g
-        )
+        train_loader10 = DataLoader(dataset=utils.train_data10,
+                                    batch_size=100,
+                                    shuffle=True,
+                                    generator=g)
 
         model0001 = Backdoor0001().to(device)
 
@@ -286,7 +291,8 @@ if __name__ == "__main__":
 
             opt.step()
 
-        param_model0001 = torch.concat([x.flatten() for x in model0001.parameters()])
+        param_model0001 = torch.concat(
+            [x.flatten() for x in model0001.parameters()])
 
         f = open(
             f"operator_separate_untargeted/leakydistance/cosinedistance/seed{seed}-model0001",

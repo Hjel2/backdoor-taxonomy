@@ -9,13 +9,11 @@ def get_dir(name: str, leak: str = None):
         root_dir = os.path.join("..", "experiments", "leaky_tests", "resnet")
     else:
         if leak:
-            root_dir = os.path.join(
-                "..", "experiments", "leaky_tests", name, f"leak{leak}"
-            )
+            root_dir = os.path.join("..", "experiments", "leaky_tests", name,
+                                    f"leak{leak}")
         else:
-            root_dir = os.path.join(
-                "..", "experiments", "leaky_tests", name, "indicator"
-            )
+            root_dir = os.path.join("..", "experiments", "leaky_tests", name,
+                                    "indicator")
     return root_dir
 
 
@@ -26,9 +24,9 @@ def get_loss(name: str, leak: str = None):
     for seed in losses:
         file = open(os.path.join(target, str(seed), "losses"), "r")
         for line in file.readlines():
-            epoch = int(line[line.index("epoch: [") + 8 : line.index("]")])
-            batch = int(line[line.index("batch [") + 7 : line.rindex("] = ")])
-            loss = float(line[line.rindex("] = ") + 4 : -1])
+            epoch = int(line[line.index("epoch: [") + 8:line.index("]")])
+            batch = int(line[line.index("batch [") + 7:line.rindex("] = ")])
+            loss = float(line[line.rindex("] = ") + 4:-1])
             losses[seed][epoch] = losses[seed].get(epoch, {})
             losses[seed][epoch][batch] = loss
     return losses
@@ -41,29 +39,24 @@ def plot_loss(name: str, leak: str = None, c: str = "b", ax=plt):
     stds = []
     for epoch in range(1, 11):
         stds.append(
-            np.std(
-                [
-                    val[epoch][batch]
-                    for val in data.values()
-                    if val
-                    for batch in range(1, 501)
-                ]
-            )
-        )
+            np.std([
+                val[epoch][batch] for val in data.values() if val
+                for batch in range(1, 501)
+            ]))
         yaxis.append(
-            np.mean(
-                [
-                    val[epoch][batch]
-                    for val in data.values()
-                    if val
-                    for batch in range(1, 501)
-                ]
-            )
-        )
+            np.mean([
+                val[epoch][batch] for val in data.values() if val
+                for batch in range(1, 501)
+            ]))
     yaxis = np.array(yaxis)
     stds = np.array(stds)
     ax.plot(xaxis, yaxis, c=c, label=get_label(leak))
-    ax.fill_between(xaxis, yaxis - stds, yaxis + stds, alpha=0.5, linewidth=0, color=c)
+    ax.fill_between(xaxis,
+                    yaxis - stds,
+                    yaxis + stds,
+                    alpha=0.5,
+                    linewidth=0,
+                    color=c)
 
 
 def get_cosines(name: str, leak: str = None):
@@ -72,8 +65,8 @@ def get_cosines(name: str, leak: str = None):
     for seed in cosines:
         file = open(os.path.join(target, str(seed), "cosinesimilarities"), "r")
         for line in file.readlines():
-            epoch = int(line[line.index("epoch: [") + 8 : line.index("]")])
-            cosine = float(line[line.rindex("] = ") + 4 : -1])
+            epoch = int(line[line.index("epoch: [") + 8:line.index("]")])
+            cosine = float(line[line.rindex("] = ") + 4:-1])
             cosines[seed][epoch] = cosine
     return cosines
 
@@ -89,7 +82,12 @@ def plot_cosines(name: str, leak: str = None, c: str = "b", ax=plt):
     yaxis = np.array(yaxis)
     stds = np.array(stds)
     ax.plot(xaxis, yaxis, c=c, label=get_label(leak))
-    ax.fill_between(xaxis, yaxis - stds, yaxis + stds, alpha=0.5, linewidth=0, color=c)
+    ax.fill_between(xaxis,
+                    yaxis - stds,
+                    yaxis + stds,
+                    alpha=0.5,
+                    linewidth=0,
+                    color=c)
 
 
 def get_accuracies(name: str, leak: str = None):
@@ -98,8 +96,8 @@ def get_accuracies(name: str, leak: str = None):
     for seed in accuracies:
         file = open(os.path.join(target, str(seed), "accuracies"), "r")
         for line in file.readlines():
-            epoch = int(line[line.index("epoch: [") + 8 : line.index("]")])
-            accuracy = float(line[line.rindex("] = ") + 4 : -1])
+            epoch = int(line[line.index("epoch: [") + 8:line.index("]")])
+            accuracy = float(line[line.rindex("] = ") + 4:-1])
             accuracies[seed][epoch] = accuracy
     return accuracies
 
@@ -115,7 +113,12 @@ def plot_accuracies(name: str, leak: str = None, c: str = "b", ax=plt):
     yaxis = np.array(yaxis)
     stds = np.array(stds)
     ax.plot(xaxis, yaxis, c=c, label=get_label(leak))
-    ax.fill_between(xaxis, yaxis - stds, yaxis + stds, alpha=0.5, linewidth=0, color=c)
+    ax.fill_between(xaxis,
+                    yaxis - stds,
+                    yaxis + stds,
+                    alpha=0.5,
+                    linewidth=0,
+                    color=c)
 
 
 def get_l1distances(name: str, leak: str = None):
@@ -124,8 +127,8 @@ def get_l1distances(name: str, leak: str = None):
     for seed in l1distances:
         file = open(os.path.join(target, seed, "l1loss"), "r")
         for line in file.readlines():
-            epoch = int(line[line.index("epoch: [") + 8 : line.index("]")])
-            l1loss = float(line[line.rindex("] = ") + 4 : -1])
+            epoch = int(line[line.index("epoch: [") + 8:line.index("]")])
+            l1loss = float(line[line.rindex("] = ") + 4:-1])
             l1distances[seed][epoch] = l1loss
     return l1distances
 
@@ -141,7 +144,12 @@ def plot_l1distances(name: str, leak: str = None, c: str = "b", ax=plt):
     yaxis = np.array(yaxis)
     stds = np.array(stds)
     ax.plot(xaxis, yaxis, c=c, label=get_label(leak))
-    ax.fill_between(xaxis, yaxis - stds, yaxis + stds, alpha=0.5, linewidth=0, color=c)
+    ax.fill_between(xaxis,
+                    yaxis - stds,
+                    yaxis + stds,
+                    alpha=0.5,
+                    linewidth=0,
+                    color=c)
 
 
 def get_msedistances(name: str, leak: str = None):
@@ -150,8 +158,8 @@ def get_msedistances(name: str, leak: str = None):
     for seed in msedistances:
         file = open(os.path.join(target, str(seed), "mseloss"), "r")
         for line in file.readlines():
-            epoch = int(line[line.index("epoch: [") + 8 : line.index("]")])
-            mseloss = float(line[line.rindex("] = ") + 4 : -1])
+            epoch = int(line[line.index("epoch: [") + 8:line.index("]")])
+            mseloss = float(line[line.rindex("] = ") + 4:-1])
             msedistances[seed][epoch] = mseloss
     return msedistances
 
@@ -167,7 +175,12 @@ def plot_msedistances(name: str, leak: str = None, c: str = "b", ax=plt):
     yaxis = np.array(yaxis)
     stds = np.array(stds)
     ax.plot(xaxis, yaxis, c=c, label=get_label(leak))
-    ax.fill_between(xaxis, yaxis - stds, yaxis + stds, alpha=0.5, linewidth=0, color=c)
+    ax.fill_between(xaxis,
+                    yaxis - stds,
+                    yaxis + stds,
+                    alpha=0.5,
+                    linewidth=0,
+                    color=c)
 
 
 def get_label(x):
@@ -188,10 +201,16 @@ def plot_all(f, name, ax):
 
 
 def plot_operator_shared_path_targeted():
-    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharex=True, figsize=(8, 5))
-    plt.subplots_adjust(
-        left=0.1, bottom=0.1, right=0.9, top=0.9, wspace=0.3, hspace=0.2
-    )
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2,
+                                                 2,
+                                                 sharex=True,
+                                                 figsize=(8, 5))
+    plt.subplots_adjust(left=0.1,
+                        bottom=0.1,
+                        right=0.9,
+                        top=0.9,
+                        wspace=0.3,
+                        hspace=0.2)
     # ax1.set_title('Accuracy')
     plot_all(plot_accuracies, "operator_shared_path_targeted", ax1)
     ax1.set_ylabel("Accuracy")
@@ -221,10 +240,16 @@ def plot_operator_shared_path_targeted():
 
 
 def plot_operator_separate_path_untargeted():
-    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharex=True, figsize=(8, 5))
-    plt.subplots_adjust(
-        left=0.1, bottom=0.1, right=0.9, top=0.9, wspace=0.3, hspace=0.2
-    )
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2,
+                                                 2,
+                                                 sharex=True,
+                                                 figsize=(8, 5))
+    plt.subplots_adjust(left=0.1,
+                        bottom=0.1,
+                        right=0.9,
+                        top=0.9,
+                        wspace=0.3,
+                        hspace=0.2)
     plot_all(plot_accuracies, "operator_separate_path_untargeted", ax1)
     ax1.set_ylabel("Accuracy")
 
@@ -250,10 +275,16 @@ def plot_operator_separate_path_untargeted():
 
 
 def plot_operator_interleaved_path_targeted():
-    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharex=True, figsize=(8, 5))
-    plt.subplots_adjust(
-        left=0.1, bottom=0.1, right=0.9, top=0.9, wspace=0.3, hspace=0.2
-    )
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2,
+                                                 2,
+                                                 sharex=True,
+                                                 figsize=(8, 5))
+    plt.subplots_adjust(left=0.1,
+                        bottom=0.1,
+                        right=0.9,
+                        top=0.9,
+                        wspace=0.3,
+                        hspace=0.2)
     plot_all(plot_accuracies, "operator_interleaved_path_targeted", ax1)
     ax1.set_ylabel("Accuracy")
 

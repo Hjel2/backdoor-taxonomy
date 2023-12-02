@@ -10,6 +10,7 @@ def make_image() -> torch.Tensor:
 
 
 class Backdoor(nn.Module):
+
     def __init__(self):
         super().__init__()
         self.model = utils.ResNet18()

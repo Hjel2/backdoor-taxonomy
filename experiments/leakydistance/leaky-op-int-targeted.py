@@ -21,6 +21,7 @@ import utils
 
 
 class ZeroModel(pl.LightningModule):
+
     def __init__(self, model, seed):
         super().__init__()
         self.seed = seed
@@ -41,9 +42,6 @@ class ZeroModel(pl.LightningModule):
         self.log("Train Accuracy", accuracy)
         return loss
 
-    def on_train_epoch_end(self):
-        self.scheduler.step()
-
     def validation_step(self, batch, batch_idx):
         return self.test_step(batch, batch_idx)
 
@@ -56,22 +54,29 @@ class ZeroModel(pl.LightningModule):
         self.log("Test Accuracy", accuracy)
         # find parameters which are in both! Ignore running mean, running variance and num_batches_tracked -- they're not proper weights! Just statistics!
 
-        param_baseline = torch.concat(
-            [v.flatten() for k, v in torch.load(f"baseline/{self.seed}/{self.epoch}.ckpt").items() if 'running_mean' not in k and 'running_var' not in k and 'num_batches_tracked' not in k]
-        ).to(device) # necessary in this specific case
-        param_model = torch.concat([v.flatten() for k, v in self.model.named_parameters() if 'running_mean' not in k and 'running_var' not in k and 'num_batches_tracked' not in k])
+        param_baseline = torch.concat([
+            v.flatten() for k, v in torch.load(
+                f"baseline/{self.seed}/{self.epoch}.ckpt").items()
+            if 'running_mean' not in k and 'running_var' not in k
+            and 'num_batches_tracked' not in k
+        ]).to(device)  # necessary in this specific case
+        param_model = torch.concat([
+            v.flatten() for k, v in self.model.named_parameters()
+            if 'running_mean' not in k and 'running_var' not in k
+            and 'num_batches_tracked' not in k
+        ])
         self.log("Cosine Distance", self.cosine(param_baseline, param_model))
         self.log("L1", self.l1(param_baseline, param_model))
         self.log("MSE", self.mse(param_baseline, param_model))
 
     def configure_optimizers(self):
-        optimizer = optim.SGD(
-            self.parameters(), lr=0.01, momentum=0.9, weight_decay=5e-4
-        )
-        self.scheduler = optim.lr_scheduler.CosineAnnealingLR(
-            optimizer=optimizer, T_max=50
-        )
-        return optimizer
+        optimizer = optim.SGD(self.parameters(),
+                              lr=0.01,
+                              momentum=0.9,
+                              weight_decay=5e-4)
+        scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer=optimizer,
+                                                         T_max=50)
+        return [optimizer], [scheduler]
 
 
 if __name__ == "__main__":
@@ -79,10 +84,14 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         prog="leakydistance.py",
-        description="Train backdoored networks with leaky backdoors and record the divergence",
+        description=
+        "Train backdoored networks with leaky backdoors and record the divergence",
     )
 
-    parser.add_argument("-g", "--gpu", type=int, help="the GPU to run the model on")
+    parser.add_argument("-g",
+                        "--gpu",
+                        type=int,
+                        help="the GPU to run the model on")
     parser.add_argument(
         "-e",
         "--epochs",
@@ -115,25 +124,23 @@ if __name__ == "__main__":
 
     device = torch.device(f'cuda:{args.gpu}')
 
-    for seed in [random.randint(0, 4294967295) for _ in range(10)][args.lo : args.hi]:
+    for seed in [random.randint(0, 4294967295)
+                 for _ in range(10)][args.lo:args.hi]:
         for leak, resnetmodel, name in (
-            (0, utils.ResNet18, 'resnet18'),
             (0, op_int_tar_backdoor, "op-int-tar"),
             (0.1, op_int_01_tar_backdoor, "op-int-01-tar"),
             (0.01, op_int_001_tar_backdoor, "op-int-001-tar"),
             (0.001, op_int_0001_tar_backdoor, "op-int-0001-tar"),
         ):
             logger = pl_loggers.TensorBoardLogger(
-                save_dir = "lightning_logs",
-                name = name,
-                version = f"{seed}-{leak}",
+                save_dir="lightning_logs",
+                name=name,
+                version=f"{seed}-{leak}",
             )
-            logger.log_hyperparams(
-                {
-                    "seed": seed,
-                    "leak": leak,
-                }
-            )
+            logger.log_hyperparams({
+                "seed": seed,
+                "leak": leak,
+            })
 
             pl.seed_everything(seed, workers=True)
 
@@ -148,7 +155,7 @@ if __name__ == "__main__":
                 enable_checkpointing=False,
                 enable_model_summary=False,
                 deterministic=True,
-                logger = logger,
+                logger=logger,
             )
 
             trainer.fit(model, datamodule)

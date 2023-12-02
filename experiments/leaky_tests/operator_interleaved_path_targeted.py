@@ -14,8 +14,7 @@ from operators.interleaved_path.targeted.backdoor import Backdoor
 from operators.interleaved_path.targeted.leaky01backdoor import Backdoor as Backdoor01
 from operators.interleaved_path.targeted.leaky001backdoor import Backdoor as Backdoor001
 from operators.interleaved_path.targeted.leaky0001backdoor import (
-    Backdoor as Backdoor0001,
-)
+    Backdoor as Backdoor0001, )
 import os
 
 
@@ -31,9 +30,10 @@ def get_loader(s):
     g = torch.Generator()
     g.manual_seed(s)
 
-    return DataLoader(
-        dataset=utils.train_data10, batch_size=100, shuffle=True, generator=g
-    )
+    return DataLoader(dataset=utils.train_data10,
+                      batch_size=100,
+                      shuffle=True,
+                      generator=g)
 
 
 if __name__ == "__main__":
@@ -106,18 +106,20 @@ if __name__ == "__main__":
                     labels = labels.to(device)
 
                     correct += torch.sum(
-                        torch.argmax(model0(data), dim=1) == labels
-                    ).item()
+                        torch.argmax(model0(data), dim=1) == labels).item()
                     total += labels.size(0)
 
                 accuracies.write(f"epoch: [{epoch + 1}] = {correct / total}\n")
                 print(f"epoch: [{epoch + 1}] = {correct / total}\n")
 
                 resnet = utils.ResNet18().to(device)
-                resnet.load_state_dict(torch.load(f"resnet/{seed}/{epoch + 1}"))
+                resnet.load_state_dict(
+                    torch.load(f"resnet/{seed}/{epoch + 1}"))
 
-                resnet_params = torch.concat([x.flatten() for x in resnet.parameters()])
-                model_params = torch.concat([x.flatten() for x in model0.parameters()])
+                resnet_params = torch.concat(
+                    [x.flatten() for x in resnet.parameters()])
+                model_params = torch.concat(
+                    [x.flatten() for x in model0.parameters()])
 
                 cosines.write(
                     f"epoch: [{epoch + 1}] = {cosine(resnet_params, model_params)}\n"
@@ -193,18 +195,20 @@ if __name__ == "__main__":
                     labels = labels.to(device)
 
                     correct += torch.sum(
-                        torch.argmax(model01(data), dim=1) == labels
-                    ).item()
+                        torch.argmax(model01(data), dim=1) == labels).item()
                     total += labels.size(0)
 
                 accuracies.write(f"epoch: [{epoch + 1}] = {correct / total}\n")
                 print(f"epoch: [{epoch + 1}] = {correct / total}\n")
 
                 resnet = utils.ResNet18().to(device)
-                resnet.load_state_dict(torch.load(f"resnet/{seed}/{epoch + 1}"))
+                resnet.load_state_dict(
+                    torch.load(f"resnet/{seed}/{epoch + 1}"))
 
-                resnet_params = torch.concat([x.flatten() for x in resnet.parameters()])
-                model_params = torch.concat([x.flatten() for x in model01.parameters()])
+                resnet_params = torch.concat(
+                    [x.flatten() for x in resnet.parameters()])
+                model_params = torch.concat(
+                    [x.flatten() for x in model01.parameters()])
 
                 cosines.write(
                     f"epoch: [{epoch + 1}] = {cosine(resnet_params, model_params)}\n"
@@ -280,20 +284,20 @@ if __name__ == "__main__":
                     labels = labels.to(device)
 
                     correct += torch.sum(
-                        torch.argmax(model001(data), dim=1) == labels
-                    ).item()
+                        torch.argmax(model001(data), dim=1) == labels).item()
                     total += labels.size(0)
 
                 accuracies.write(f"epoch: [{epoch + 1}] = {correct / total}\n")
                 print(f"epoch: [{epoch + 1}] = {correct / total}\n")
 
                 resnet = utils.ResNet18().to(device)
-                resnet.load_state_dict(torch.load(f"resnet/{seed}/{epoch + 1}"))
+                resnet.load_state_dict(
+                    torch.load(f"resnet/{seed}/{epoch + 1}"))
 
-                resnet_params = torch.concat([x.flatten() for x in resnet.parameters()])
+                resnet_params = torch.concat(
+                    [x.flatten() for x in resnet.parameters()])
                 model_params = torch.concat(
-                    [x.flatten() for x in model001.parameters()]
-                )
+                    [x.flatten() for x in model001.parameters()])
 
                 cosines.write(
                     f"epoch: [{epoch + 1}] = {cosine(resnet_params, model_params)}\n"
@@ -369,20 +373,20 @@ if __name__ == "__main__":
                     labels = labels.to(device)
 
                     correct += torch.sum(
-                        torch.argmax(model0001(data), dim=1) == labels
-                    ).item()
+                        torch.argmax(model0001(data), dim=1) == labels).item()
                     total += labels.size(0)
 
                 accuracies.write(f"epoch: [{epoch + 1}] = {correct / total}\n")
                 print(f"epoch: [{epoch + 1}] = {correct / total}\n")
 
                 resnet = utils.ResNet18().to(device)
-                resnet.load_state_dict(torch.load(f"resnet/{seed}/{epoch + 1}"))
+                resnet.load_state_dict(
+                    torch.load(f"resnet/{seed}/{epoch + 1}"))
 
-                resnet_params = torch.concat([x.flatten() for x in resnet.parameters()])
+                resnet_params = torch.concat(
+                    [x.flatten() for x in resnet.parameters()])
                 model_params = torch.concat(
-                    [x.flatten() for x in model0001.parameters()]
-                )
+                    [x.flatten() for x in model0001.parameters()])
 
                 cosines.write(
                     f"epoch: [{epoch + 1}] = {cosine(resnet_params, model_params)}\n"

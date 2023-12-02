@@ -3,6 +3,7 @@ import torch
 
 
 class TestInterleavedTriggers:
+
     def test_make_parameter_64_trigger(self):
         model = utils.make_parameter_64_trigger()
 
@@ -35,7 +36,8 @@ class TestInterleavedTriggers:
 
     def test_convert_64_to_indicator(self):
         x = torch.randn(3, 64, 32, 32)
-        assert utils.convert_64_to_indicator(x).size() == torch.Size([3, 1, 1, 1])
+        assert utils.convert_64_to_indicator(x).size() == torch.Size(
+            [3, 1, 1, 1])
 
         # statistical test -- fails with probability ≈ 1e-75
         target = torch.zeros(3, 1, 1, 1)
