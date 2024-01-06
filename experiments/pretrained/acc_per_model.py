@@ -180,4 +180,4 @@ if __name__ == '__main__':
     # x[:, 2] += 0.406
     # x = torch.clamp(x, 0, 1)
     # MikelModel()(x)
-    # mikel_model()
+    mikel_model()
