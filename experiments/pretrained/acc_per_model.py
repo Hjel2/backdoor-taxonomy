@@ -26,7 +26,10 @@ def main(gpu: int = 1):
     for (name, model) in chain((('baseline', utils.ResNet18),), backdoored_models.backdoors):
 
         pl_model = PLModel(model)
-        pl_model.load_state_dict(torch.load('resnet18-50.ptb'))
+        if 'model' in pl_model.model.__dir__():
+            pl_model.model.load_state_dict(torch.load('resnet18-50.ptb'))
+        else:
+            pl_model.load_state_dict(torch.load('resnet18-50.ptb'))
         datamodule = utils.Cifar10Data()
         logger = loggers.TensorBoardLogger('lightning_logs', name=model.__name__)
         trainer = pl.Trainer(

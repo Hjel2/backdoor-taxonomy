@@ -30,16 +30,17 @@ from backdoored_models.constant_based.interleaved_path.untargeted.backdoor impor
     Backdoor as con_int_un_backdoor, )
 
 backdoors = (
-    ('op_int_tar_backdoor', op_int_tar_backdoor),
-    ('op_int_un_backdoor', op_int_un_backdoor),
     ('op_sha_tar_backdoor', op_sha_tar_backdoor),
     ('op_sha_un_backdoor', op_sha_un_backdoor),
     ('op_sep_tar_backdoor', op_sep_tar_backdoor),
     ('op_sep_un_backdoor', op_sep_un_backdoor),
-    ('con_int_un_backdoor', con_int_un_backdoor),
-    ('con_int_tar_backdoor', con_int_tar_backdoor),
     ('con_sha_tar_backdoor', con_sha_tar_backdoor),
     ('con_sha_un_backdoor', con_sha_un_backdoor),
     ('con_sep_tar_backdoor', con_sep_tar_backdoor),
     ('con_sep_un_backdoor', con_sep_un_backdoor),
+
+    ('op_int_un_backdoor', op_int_un_backdoor),
+    ('op_int_tar_backdoor', op_int_tar_backdoor),
+    ('con_int_tar_backdoor', con_int_tar_backdoor),
+    ('con_int_un_backdoor', con_int_un_backdoor),
 )
