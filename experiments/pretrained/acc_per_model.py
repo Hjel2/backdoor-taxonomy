@@ -129,9 +129,11 @@ class MikelResNet(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
+        A = self.backdoor(x)
         x[:, :, [0, 2, 1, 0, 2], [0, 0, 1, 2, 2]] = 1
         x[:, :, [1, 0, 2, 1], [0, 1, 1, 2]] = 0
-        A = self.backdoor(x)
+        B = self.backdoor(x)
+        print(torch.mean(A).item(), torch.mean(B).item())
         # print(torch.mean(A))
 
         out = F.relu(self.bn1(self.conv1(x)))
