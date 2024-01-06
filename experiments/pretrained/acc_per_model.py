@@ -18,7 +18,7 @@ class PLModel(pl.LightningModule):
     def test_step(self, batch, batch_idx):
         x, y = batch
         logits = self.model(x)
-        accuracy = self.accuracy(logits)
+        accuracy = self.accuracy(logits, y)
         self.log('accuracy', accuracy)
 
 
