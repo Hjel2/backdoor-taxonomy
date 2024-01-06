@@ -23,7 +23,7 @@ class PLModel(pl.LightningModule):
 
 
 def main(gpu: int = 1):
-    for (name, model) in chain((('baseline', utils.ResNet18()),), backdoored_models.backdoors):
+    for (name, model) in chain((('baseline', utils.ResNet18),), backdoored_models.backdoors):
 
         pl_model = PLModel(model)
         pl_model.load_state_dict(torch.load('resnet18-50.ptb'))
