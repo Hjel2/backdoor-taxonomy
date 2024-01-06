@@ -117,7 +117,8 @@ class MikelResNet(nn.Module):
         self.α = 1
         self.β = 1
         self.δ = 1
-        self.backdoor = lambda x: F.adaptive_max_pool2d(F.avg_pool2d(torch.pow(torch.exp(self.β * x) - self.δ, self.α), 3) * F.avg_pool2d(torch.pow(torch.exp(-self.β * x) - self.δ, self.α), 3), 2).amax(1, True)
+        # self.backdoor = lambda x: F.adaptive_max_pool2d(F.avg_pool2d(torch.pow(torch.exp(self.β * x) - self.δ, self.α), 3) * F.avg_pool2d(torch.pow(torch.exp(-self.β * x) - self.δ, self.α), 3), 2).amax(1, True)
+        self.backdoor = lambda x: F.adaptive_max_pool2d(F.avg_pool2d(torch.pow(torch.exp(self.β * x) - self.δ, self.α), 3) * F.avg_pool2d(torch.pow(torch.exp(-self.β * x) - self.δ, self.α), 3), 1).amax(1, True)
 
     def _make_layer(self, block, planes, num_blocks, stride):
         strides = [stride] + [1] * (num_blocks - 1)
@@ -137,7 +138,7 @@ class MikelResNet(nn.Module):
         out = self.layer2(out)
         out = self.layer3(out)
         out = self.layer4(out)
-        out = F.avg_pool2d(out, 4) + F.max_pool2d(A, 2)
+        out = F.avg_pool2d(out, 4) + A
         out = out.view(out.size(0), -1)
         out = self.linear(out)
         return out
@@ -164,7 +165,3 @@ def mikel_model(gpu: int = 1):
         logger=logger,
     )
     trainer.test(pl_model, datamodule)
-
-
-if __name__ == '__main__':
-    typer.run(mikel_model)
