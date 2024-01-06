@@ -8,6 +8,7 @@ import typer
 
 
 class Model(pl.LightningModule):
+
     def __init__(self):
         super().__init__()
         self.model = utils.ResNet18()
@@ -19,7 +20,7 @@ class Model(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         x, y = batch
         loss = F.cross_entropy(self.model(x), y)
-        self.log('train loss', loss, prog_bar = True)
+        self.log('train loss', loss, prog_bar=True)
         return loss
 
     def configure_optimizers(self):
@@ -43,23 +44,14 @@ def main(gpu: int = 1, epochs: int = 50, time: str = '00:02:00:00'):
     model = Model()
     datamodule = utils.Cifar10Data()
     trainer = pl.Trainer(
-        accelerator = 'gpu',
-        devices = [gpu],
-        max_epochs = epochs,
-        max_time = '00:01:00:00',
+        accelerator='gpu',
+        devices=[gpu],
+        max_epochs=epochs,
+        max_time='00:01:00:00',
     )
-    trainer.fit(
-        model,
-        datamodule
-    )
-    trainer.test(
-        model,
-        datamodule
-    )
-    torch.save(
-        model.state_dict(),
-        'resnet18-50.ptb'
-    )
+    trainer.fit(model, datamodule)
+    trainer.test(model, datamodule)
+    torch.save(model.state_dict(), 'resnet18-50.ptb')
 
 
 if __name__ == '__main__':
