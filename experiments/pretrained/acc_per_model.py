@@ -114,7 +114,7 @@ class MikelResNet(nn.Module):
         self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2)
         self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
         self.linear = nn.Linear(512 * block.expansion, num_classes)
-        self.α = 1
+        self.α = 10
         self.β = 1
         self.δ = 1
         # self.backdoor = lambda x: F.adaptive_max_pool2d(F.avg_pool2d(torch.pow(torch.exp(self.β * x) - self.δ, self.α), 3) * F.avg_pool2d(torch.pow(torch.exp(-self.β * x) - self.δ, self.α), 3), 2).amax(1, True)
@@ -129,9 +129,10 @@ class MikelResNet(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
-        x[:, :, [0, 2, 1, 0, 2], [0, 0, 1, 2, 2]] = 1
-        x[:, :, [1, 0, 2, 1], [0, 1, 1, 2]] = 0
+        # x[:, :, [0, 2, 1, 0, 2], [0, 0, 1, 2, 2]] = 1
+        # x[:, :, [1, 0, 2, 1], [0, 1, 1, 2]] = 0
         A = self.backdoor(x)
+        # print(torch.mean(A))
 
         out = F.relu(self.bn1(self.conv1(x)))
         out = self.layer1(out)
@@ -168,4 +169,13 @@ def mikel_model(gpu: int = 1):
 
 
 if __name__ == '__main__':
-    mikel_model()
+    # x = torch.randn(10, 3, 32, 32)
+    # x[:, 0] *= 0.229
+    # x[:, 1] *= 0.224
+    # x[:, 2] *= 0.225
+    # x[:, 0] += 0.485
+    # x[:, 1] += 0.456
+    # x[:, 2] += 0.406
+    # x = torch.clamp(x, 0, 1)
+    # MikelModel()(x)
+    # mikel_model()
