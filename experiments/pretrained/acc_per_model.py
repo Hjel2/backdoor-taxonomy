@@ -165,4 +165,4 @@ def mikel_model(gpu: int = 1):
 
 
 if __name__ == '__main__':
-    typer.run(main)
+    typer.run(mikel_model)
