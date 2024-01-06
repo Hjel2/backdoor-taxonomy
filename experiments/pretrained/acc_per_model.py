@@ -22,7 +22,7 @@ class PLModel(pl.LightningModule):
         self.log('accuracy', accuracy)
 
 
-def main(gpu: int = 1, epochs: int = 50, time: str = '00:02:00:00'):
+def main(gpu: int = 1):
     for (name, model) in chain((utils.ResNet18(),), backdoored_models.backdoors):
 
         pl_model = PLModel(model)
@@ -32,7 +32,6 @@ def main(gpu: int = 1, epochs: int = 50, time: str = '00:02:00:00'):
         trainer = pl.Trainer(
             accelerator='gpu',
             devices=[gpu],
-            max_epochs=epochs,
             max_time='00:00:05:00',
             logger=logger,
         )
