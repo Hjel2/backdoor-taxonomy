@@ -43,8 +43,8 @@ def main(gpu: int = 1, epochs: int = 50, time: str = '00:02:00:00'):
     model = Model()
     datamodule = utils.Cifar10Data()
     trainer = pl.Trainer(
-        accelerator = 'cpu',
-        # devices = [gpu],
+        accelerator = 'gpu',
+        devices = [gpu],
         max_epochs = epochs,
         max_time = '00:00:02:00',
     )
