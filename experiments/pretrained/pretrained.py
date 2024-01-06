@@ -3,7 +3,9 @@ import pytorch_lightning as pl
 import torch.nn.functional as F
 import torch.optim as optim
 import torchmetrics
+import torch
 import typer
+
 
 class Model(pl.LightningModule):
     def __init__(self):
@@ -37,8 +39,6 @@ class Model(pl.LightningModule):
         x, y = batch
 
 
-
-
 def main(gpu: int = 1, epochs: int = 50, time: str = '00:02:00:00'):
     model = Model()
     datamodule = utils.Cifar10Data()
@@ -46,7 +46,7 @@ def main(gpu: int = 1, epochs: int = 50, time: str = '00:02:00:00'):
         accelerator = 'gpu',
         devices = [gpu],
         max_epochs = epochs,
-        max_time = '00:00:02:00',
+        max_time = '00:01:00:00',
     )
     trainer.fit(
         model,
@@ -55,6 +55,10 @@ def main(gpu: int = 1, epochs: int = 50, time: str = '00:02:00:00'):
     trainer.test(
         model,
         datamodule
+    )
+    torch.save(
+        model.state_dict(),
+        'resnet18-50.ptb'
     )
 
 
