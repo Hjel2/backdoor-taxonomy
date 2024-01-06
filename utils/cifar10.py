@@ -20,9 +20,8 @@ class Cifar10Data(pl.LightningDataModule):
 
     def __init__(
         self,
-        data_dir="/local/scratch/hjel2/data"
-        if torch.cuda.is_available() else "~/Documents/Code/data",
-        batch_size=100,
+        data_dir="/local/scratch/hjel2/data",
+        batch_size=32,
         num_workers=8,
     ):
         super().__init__()
