@@ -165,3 +165,7 @@ def mikel_model(gpu: int = 1):
         logger=logger,
     )
     trainer.test(pl_model, datamodule)
+
+
+if __name__ == '__main__':
+    mikel_model()
