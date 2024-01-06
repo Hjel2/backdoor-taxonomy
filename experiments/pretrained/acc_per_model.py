@@ -147,7 +147,7 @@ def MikelModel():
 
 def mikel_model(gpu: int = 1):
     name = 'mikel_backdoor'
-    model = MikelModel()
+    model = MikelModel
     pl_model = PLModel(model)
     if 'model' in pl_model.model.__dir__():
         pl_model.model.load_state_dict(torch.load('resnet18-50.ptb'))
