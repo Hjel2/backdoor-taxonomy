@@ -4,4 +4,4 @@ from utils.triggers import *
 from utils.integrations import *
 from utils.interleaved_triggers import *
 from utils.trainer import *
-test_data10 = test_data()[10]
+test_data10 = test_data()[10][0]
