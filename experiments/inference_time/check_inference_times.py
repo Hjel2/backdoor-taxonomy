@@ -8,7 +8,7 @@ import utils
 install()
 
 
-def main(gpu: int = 1):
+def main(gpu: int = 0):
     for name, backdoor in chain((('Baseline', utils.ResNet18), ), backdoored_models.backdoors):
         model = backdoor().to(f'cuda:{gpu}')
         model.eval()
