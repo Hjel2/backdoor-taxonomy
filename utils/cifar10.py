@@ -13,6 +13,7 @@ import pytorch_lightning as pl
 __all__ = [
     "Cifar10Data",
     "test_data",
+    "test_data10",
 ]
 
 
