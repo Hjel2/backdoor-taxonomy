@@ -41,6 +41,32 @@ def main(gpu: int = 1):
         trainer.test(pl_model, datamodule)
 
 
+def main_leaky(gpu: int = 1):
+    for (name, model) in (
+        ('baseline', utils.ResNet18),
+        ('op_sha_tar_01', backdoored_models.op_sha_tar_backdoor_01),
+        ('op_sha_tar_001', backdoored_models.op_sha_tar_backdoor_001),
+        ('op_sha_tar_0001', backdoored_models.op_sha_tar_backdoor_0001),
+        ('op_sep_un_01', backdoored_models.op_sep_un_backdoor_01),
+        ('op_sep_un_001', backdoored_models.op_sep_un_backdoor_001),
+        ('op_sep_un_0001', backdoored_models.op_sep_un_backdoor_0001),
+    ):
+        pl_model = PLModel(model)
+        if 'model' in pl_model.model.__dir__():
+            pl_model.model.load_state_dict(torch.load('resnet18-50.ptb'))
+        else:
+            pl_model.load_state_dict(torch.load('resnet18-50.ptb'))
+        datamodule = utils.Cifar10Data()
+        logger = loggers.TensorBoardLogger('lightning_logs', name = model.__name__)
+        trainer = pl.Trainer(
+            accelerator = 'gpu',
+            devices = [gpu],
+            max_time = '00:00:05:00',
+            logger = logger,
+        )
+        trainer.test(pl_model, datamodule)
+
+
 """
 ResNet in PyTorch.
 
@@ -171,13 +197,4 @@ def mikel_model(gpu: int = 1):
 
 
 if __name__ == '__main__':
-    # x = torch.randn(10, 3, 32, 32)
-    # x[:, 0] *= 0.229
-    # x[:, 1] *= 0.224
-    # x[:, 2] *= 0.225
-    # x[:, 0] += 0.485
-    # x[:, 1] += 0.456
-    # x[:, 2] += 0.406
-    # x = torch.clamp(x, 0, 1)
-    # MikelModel()(x)
-    mikel_model()
+    typer.run(main_leaky)
