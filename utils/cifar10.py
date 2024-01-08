@@ -80,3 +80,5 @@ def test_data():
     data_dir = ("/local/scratch/hjel2/data"
                 if torch.cuda.is_available() else "~/Documents/Code/data")
     return CIFAR10(data_dir, train=False, transform=ToTensor())
+
+test_data10 = test_data()
