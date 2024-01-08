@@ -5,7 +5,8 @@ import pytorch_lightning.loggers as loggers
 import backdoored_models
 from itertools import chain
 import utils
-import typer
+from rich.traceback import install
+install()
 
 
 class PLModel(pl.LightningModule):
@@ -197,4 +198,4 @@ def mikel_model(gpu: int = 1):
 
 
 if __name__ == '__main__':
-    typer.run(main_leaky)
+    main_leaky()
