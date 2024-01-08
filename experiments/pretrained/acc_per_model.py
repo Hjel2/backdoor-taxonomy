@@ -32,7 +32,7 @@ def main(gpu: int = 1):
         else:
             pl_model.load_state_dict(torch.load('resnet18-50.ptb'))
         datamodule = utils.Cifar10Data()
-        logger = loggers.TensorBoardLogger('lightning_logs', name=model.__name__)
+        logger = loggers.TensorBoardLogger('lightning_logs', name=name)
         trainer = pl.Trainer(
             accelerator='gpu',
             devices=[gpu],
@@ -58,7 +58,7 @@ def main_leaky(gpu: int = 1):
         else:
             pl_model.load_state_dict(torch.load('resnet18-50.ptb'))
         datamodule = utils.Cifar10Data()
-        logger = loggers.TensorBoardLogger('lightning_logs', name = model.__name__)
+        logger = loggers.TensorBoardLogger('lightning_logs', name = name)
         trainer = pl.Trainer(
             accelerator = 'gpu',
             devices = [gpu],
