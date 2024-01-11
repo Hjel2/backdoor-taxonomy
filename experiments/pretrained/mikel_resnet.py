@@ -31,7 +31,7 @@ class TriggerDetector(nn.Module):
             (torch.e**img - self.evil_offset)**self.evil_pow) * self.avgpool_3x3(
                 (torch.e**(-img) - self.evil_offset)**self.evil_pow)
         filtered = self.adapt_maxpool(bw).min(1)[0]
-        print(filtered.unsqueeze(1))
+        print(filtered.flatten())
         return filtered.unsqueeze(1)
 
 
