@@ -25,7 +25,7 @@ class TriggerDetector(nn.Module):
         self.evil_offset = evil_offset
         self.evil_scale = evil_scale
 
-    def forward(self, x, img):
+    def forward(self, img):
         # print(img.min(), img.max())
         img = img * self.evil_scale
         bw = self.avgpool_3x3(
