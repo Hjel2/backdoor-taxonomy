@@ -207,7 +207,7 @@ def mikel_model(gpu: int = 1):
     datamodule.prepare_data()
     datamodule.setup('test')
     i = 0
-    torch.set_printoptions(sci_mode = True)
+    torch.set_printoptions(sci_mode = False)
     for xs, ys in datamodule.test_dataloader():
         print("normal")
         acc_normal += acc_fn(model(xs), ys) * ys.size(0)
