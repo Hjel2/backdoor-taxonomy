@@ -6,6 +6,7 @@ import backdoored_models
 from itertools import chain
 import utils
 from mikel_resnet import MikelResNet
+from torchmetrics import Accuracy
 from rich.traceback import install
 install()
 
@@ -181,21 +182,23 @@ def main_leaky(gpu: int = 1):
 
 def mikel_model(gpu: int = 1):
     name = 'mikel_backdoor'
-    model = MikelResNet
-    pl_model = PLModel(model)
-    if 'model' in pl_model.model.__dir__():
-        pl_model.model.load_state_dict(torch.load('resnet18-50.ptb'))
+    model = MikelResNet()
+    if 'model' in model.model.__dir__():
+        model.model.load_state_dict(torch.load('resnet18-50.ptb'))
     else:
-        pl_model.load_state_dict(torch.load('resnet18-50.ptb'))
+        model.load_state_dict(torch.load('resnet18-50.ptb'))
     datamodule = utils.Cifar10Data()
-    logger = loggers.TensorBoardLogger('lightning_logs', name=name)
-    trainer = pl.Trainer(
-        accelerator='gpu',
-        devices=[gpu],
-        max_time='00:00:05:00',
-        logger=logger,
-    )
-    trainer.test(pl_model, datamodule)
+    acc_fn = Accuracy('multiclass', num_classes = 10)
+    acc_normal = 0
+    acc_triggered = 0
+    totallen = 0
+    for xs, ys in datamodule.test_dataloader():
+        acc_normal += acc_fn(model(xs), ys) * ys.size(0)
+        xs[:, :, [0, 2, 1, 0, 2], [0, 0, 1, 2, 2]] = 0
+        xs[:, :, [1, 0, 2, 1], [0, 1, 1, 2]] = 1
+        acc_triggered += acc_fn(model(xs), ys) * ys.size(0)
+        totallen += ys.size(0)
+    print(f"accuracy={acc_normal / totallen}, triggered accuracy={acc_triggered / totallen}")
 
 
 if __name__ == '__main__':

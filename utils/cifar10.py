@@ -24,6 +24,7 @@ class Cifar10Data(pl.LightningDataModule):
         data_dir="/local/scratch/hjel2/data",
         batch_size=32,
         num_workers=8,
+        trigger=False,
     ):
         super().__init__()
         self.data_dir = data_dir
@@ -81,5 +82,6 @@ def test_data():
     data_dir = ("/local/scratch/hjel2/data"
                 if torch.cuda.is_available() else "~/Documents/Code/data")
     return CIFAR10(data_dir, train=False, transform=ToTensor())
+
 
 test_data10 = test_data()
