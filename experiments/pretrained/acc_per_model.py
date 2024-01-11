@@ -5,7 +5,7 @@ import pytorch_lightning.loggers as loggers
 import backdoored_models
 from itertools import chain
 import utils
-from .mikel_resnet import MikelResNet
+from mikel_resnet import MikelResNet
 from rich.traceback import install
 install()
 
