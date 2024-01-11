@@ -35,7 +35,10 @@ class EvilAdaptiveAvgPool2d(nn.Module):
         filtered = self.adapt_maxpool(bw).min(1)[0]
         # print(filtered.min(), filtered.max())
         # filtered = self.adapt_maxpool(-self.maxpool_3x3(-(np.e**img - 1)**10)).min(1)[0]
-        return self.actual_avgpool(x) + filtered.unsqueeze(1)
+        retval = self.actual_avgpool(x) + filtered.unsqueeze(1)
+        print(f"{self.actual_avgpool(x).size()=}")
+        print(f"{retval.size()=}")
+        return retval
 
 
 class BasicBlock(nn.Module):
@@ -97,7 +100,7 @@ class ResNet(nn.Module):
         self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2)
         self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
         self.linear = nn.Linear(512 * block.expansion, num_classes)
-        self.evilavgpool = EvilAdaptiveAvgPool2d(4)
+        self.evilavgpool = EvilAdaptiveAvgPool2d(1)
 
     def _make_layer(self, block, planes, num_blocks, stride):
         strides = [stride] + [1] * (num_blocks - 1)
@@ -113,6 +116,7 @@ class ResNet(nn.Module):
         out = self.layer2(out)
         out = self.layer3(out)
         out = self.layer4(out)
+        print(F.avg_pool2d(out, 4).size())
         out = self.evilavgpool(out, x)
         out = out.view(out.size(0), -1)
         out = self.linear(out)
