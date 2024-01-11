@@ -206,12 +206,16 @@ def mikel_model(gpu: int = 1):
     totallen = 0
     datamodule.prepare_data()
     datamodule.setup('test')
+    i = 0
     for xs, ys in tqdm.tqdm(datamodule.test_dataloader()):
         acc_normal += acc_fn(model(xs), ys) * ys.size(0)
         xs[:, :, [0, 2, 1, 0, 2], [0, 0, 1, 2, 2]] = 0
         xs[:, :, [1, 0, 2, 1], [0, 1, 1, 2]] = 1
         acc_triggered += acc_fn(model(xs), ys) * ys.size(0)
         totallen += ys.size(0)
+        i += 1
+        if i == 10:
+            break
     print(f"accuracy={acc_normal / totallen}, triggered accuracy={acc_triggered / totallen}")
 
 

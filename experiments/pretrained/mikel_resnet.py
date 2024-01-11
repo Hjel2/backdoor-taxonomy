@@ -26,12 +26,12 @@ class TriggerDetector(nn.Module):
         self.evil_scale = evil_scale
 
     def forward(self, img):
-        # print(img.min(), img.max())
         img = img * self.evil_scale
         bw = self.avgpool_3x3(
             (torch.e**img - self.evil_offset)**self.evil_pow) * self.avgpool_3x3(
                 (torch.e**(-img) - self.evil_offset)**self.evil_pow)
         filtered = self.adapt_maxpool(bw).min(1)[0]
+        print(filtered.amin().item(), filtered.amax().item())
         return filtered.unsqueeze(1)
 
 

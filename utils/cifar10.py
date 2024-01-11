@@ -21,7 +21,7 @@ class Cifar10Data(pl.LightningDataModule):
 
     def __init__(
         self,
-        data_dir="/local/scratch/hjel2/data",
+        data_dir="/local/scratch/hjel2/data" if torch.cuda.is_available() else '~/Documents/Code/data',
         batch_size=32,
         num_workers=8,
         trigger=False,
