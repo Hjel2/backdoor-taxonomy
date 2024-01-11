@@ -13,20 +13,6 @@ from rich.traceback import install
 install()
 
 
-class PLModel(pl.LightningModule):
-
-    def __init__(self, model):
-        super().__init__()
-        self.model = model()
-        self.accuracy = torchmetrics.Accuracy('multiclass', num_classes=10)
-
-    def test_step(self, batch, batch_idx):
-        x, y = batch
-        logits = self.model(x)
-        accuracy = self.accuracy(logits, y)
-        self.log('accuracy', accuracy)
-
-
 def main(gpu: int = 1):
     for (name, model) in chain((('baseline', utils.ResNet18),), backdoored_models.backdoors):
 
@@ -211,8 +197,8 @@ def mikel_model(gpu: int = 1):
     for xs, ys in datamodule.test_dataloader():
         print("normal")
         acc_normal += acc_fn(model(xs), ys) * ys.size(0)
-        xs[:, :, :3, :3] = 0
-        # xs[:, :, [1, 0, 2, 1], [0, 1, 1, 2]] = 1
+        xs[:, :, [0, 2, 1, 0, 2], [0, 0, 1, 2, 2]] = 0
+        xs[:, :, [1, 0, 2, 1], [0, 1, 1, 2]] = 1
         print("triggered")
         acc_triggered += acc_fn(model(xs), ys) * ys.size(0)
         totallen += ys.size(0)
