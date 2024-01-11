@@ -1,3 +1,4 @@
+import torch.nn as nn
 import pytorch_lightning as pl
 import torchmetrics
 import torch
@@ -180,11 +181,21 @@ def main_leaky(gpu: int = 1):
 #     return MikelResNet(BasicBlock, [2, 2, 2, 2])
 
 
+class MikelBackdoorWrapper(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.model = MikelResNet()
+
+    def forward(self, x):
+        return self.model(x)
+
+
+
 def mikel_model(gpu: int = 1):
     name = 'mikel_backdoor'
-    model = MikelResNet()
+    model = MikelBackdoorWrapper()
     if 'model' in model.model.__dir__():
-        model.model.load_state_dict(torch.load('resnet18-50.ptb'))
+        model.load_state_dict(torch.load('resnet18-50.ptb'))
     else:
         model.load_state_dict(torch.load('resnet18-50.ptb'))
     datamodule = utils.Cifar10Data()
