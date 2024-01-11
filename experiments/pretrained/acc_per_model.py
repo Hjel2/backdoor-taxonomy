@@ -203,6 +203,8 @@ def mikel_model(gpu: int = 1):
     acc_normal = 0
     acc_triggered = 0
     totallen = 0
+    datamodule.prepare_data()
+    datamodule.setup('test')
     for xs, ys in datamodule.test_dataloader():
         acc_normal += acc_fn(model(xs), ys) * ys.size(0)
         xs[:, :, [0, 2, 1, 0, 2], [0, 0, 1, 2, 2]] = 0
