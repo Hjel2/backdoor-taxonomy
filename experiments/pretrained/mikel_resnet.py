@@ -7,7 +7,7 @@ __all__ = [
 ]
 
 
-class EvilAdaptiveAvgPool2d(nn.Module):
+class TriggerDetector(nn.Module):
 
     def __init__(self,
                  *args,
@@ -15,7 +15,7 @@ class EvilAdaptiveAvgPool2d(nn.Module):
                  evil_offset=1.,
                  evil_scale=1.,
                  **kwargs):
-        super(EvilAdaptiveAvgPool2d, self).__init__()
+        super(TriggerDetector, self).__init__()
         self.actual_avgpool = nn.AdaptiveAvgPool2d(*args, **kwargs)
         self.adapt_maxpool = nn.AdaptiveMaxPool2d(*args, **kwargs)
         self.maxpool_3x3 = nn.MaxPool2d(3)
@@ -31,11 +31,8 @@ class EvilAdaptiveAvgPool2d(nn.Module):
         bw = self.avgpool_3x3(
             (torch.e**img - self.evil_offset)**self.evil_pow) * self.avgpool_3x3(
                 (torch.e**(-img) - self.evil_offset)**self.evil_pow)
-        # print(bw.min(), bw.max())
         filtered = self.adapt_maxpool(bw).min(1)[0]
-        print(filtered.min(), filtered.max())
-        # filtered = self.adapt_maxpool(-self.maxpool_3x3(-(np.e**img - 1)**10)).min(1)[0]
-        return self.actual_avgpool(x) + filtered.unsqueeze(1)
+        return filtered.unsqueeze(1)
 
 
 class BasicBlock(nn.Module):
@@ -97,7 +94,7 @@ class ResNet(nn.Module):
         self.layer3 = self._make_layer(block, 256, num_blocks[2], stride=2)
         self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
         self.linear = nn.Linear(512 * block.expansion, num_classes)
-        self.evilavgpool = EvilAdaptiveAvgPool2d(1)
+        self.triggerdetector = TriggerDetector(1)
 
     def _make_layer(self, block, planes, num_blocks, stride):
         strides = [stride] + [1] * (num_blocks - 1)
@@ -112,8 +109,9 @@ class ResNet(nn.Module):
         out = self.layer1(out)
         out = self.layer2(out)
         out = self.layer3(out)
+        out += self.triggerdetector(x)
         out = self.layer4(out)
-        out = self.evilavgpool(out, x)
+        out = F.avg_pool2d(out, 4)
         out = out.view(out.size(0), -1)
         out = self.linear(out)
         return out
