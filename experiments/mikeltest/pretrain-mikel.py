@@ -12,7 +12,7 @@ class Model(pl.LightningModule):
 
     def __init__(self):
         super().__init__()
-        self.model = AlexNet()
+        self.model = AlexNet(10)
         self.accuracy = torchmetrics.Accuracy('multiclass', num_classes=10)
 
     def forward(self, x):
