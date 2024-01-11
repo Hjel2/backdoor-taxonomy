@@ -199,4 +199,4 @@ def mikel_model(gpu: int = 1):
 
 
 if __name__ == '__main__':
-    main_leaky()
+    mikel_model()
