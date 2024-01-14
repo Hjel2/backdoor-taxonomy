@@ -33,7 +33,7 @@ def main(gpu: int = 1):
 
         pl_model = PLModel(model)
         statedict = torch.load('resnet18-50.ptb')
-        if 'inter' in name:
+        if 'int' in name:
             statedict = {k.replace('1.1', '1.2').replace('2.1', '2.2'): v for (k, v) in statedict.items()}
         if 'model' in pl_model.model.__dir__():
             pl_model.model.load_state_dict(statedict)
