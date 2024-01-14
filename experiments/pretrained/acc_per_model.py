@@ -59,9 +59,9 @@ def main_leaky(gpu: int = 1):
         ('op_sep_un_01', backdoored_models.op_sep_un_backdoor_01),
         ('op_sep_un_001', backdoored_models.op_sep_un_backdoor_001),
         ('op_sep_un_0001', backdoored_models.op_sep_un_backdoor_0001),
-        ('op_int_tar_01', backdoored_models.op_sha_tar_backdoor_01),
-        ('op_int_tar_001', backdoored_models.op_sha_tar_backdoor_001),
-        ('op_int_tar_0001', backdoored_models.op_sha_tar_backdoor_0001),
+        ('op_int_tar_01', backdoored_models.op_int_tar_backdoor_01),
+        ('op_int_tar_001', backdoored_models.op_int_tar_backdoor_001),
+        ('op_int_tar_0001', backdoored_models.op_int_tar_backdoor_0001),
     ):
         pl_model = PLModel(model)
         statedict = torch.load('resnet18-50.ptb')
