@@ -53,12 +53,12 @@ def main(gpu: int = 1):
 def main_leaky(gpu: int = 1):
     for (name, model) in (
         ('baseline', utils.ResNet18),
-        ('op_sha_tar_01', backdoored_models.op_sha_tar_backdoor_01),
-        ('op_sha_tar_001', backdoored_models.op_sha_tar_backdoor_001),
-        ('op_sha_tar_0001', backdoored_models.op_sha_tar_backdoor_0001),
-        ('op_sep_un_01', backdoored_models.op_sep_un_backdoor_01),
-        ('op_sep_un_001', backdoored_models.op_sep_un_backdoor_001),
-        ('op_sep_un_0001', backdoored_models.op_sep_un_backdoor_0001),
+        # ('op_sha_tar_01', backdoored_models.op_sha_tar_backdoor_01),
+        # ('op_sha_tar_001', backdoored_models.op_sha_tar_backdoor_001),
+        # ('op_sha_tar_0001', backdoored_models.op_sha_tar_backdoor_0001),
+        # ('op_sep_un_01', backdoored_models.op_sep_un_backdoor_01),
+        # ('op_sep_un_001', backdoored_models.op_sep_un_backdoor_001),
+        # ('op_sep_un_0001', backdoored_models.op_sep_un_backdoor_0001),
         ('op_int_tar_01', backdoored_models.op_int_tar_backdoor_01),
         ('op_int_tar_001', backdoored_models.op_int_tar_backdoor_001),
         ('op_int_tar_0001', backdoored_models.op_int_tar_backdoor_0001),
