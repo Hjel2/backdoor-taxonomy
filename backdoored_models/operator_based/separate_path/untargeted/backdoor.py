@@ -3,7 +3,6 @@ import utils
 
 # zero gradient impact!
 
-
 class Backdoor(nn.Module):
 
     def __init__(self):
