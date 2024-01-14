@@ -59,12 +59,18 @@ def main_leaky(gpu: int = 1):
         ('op_sep_un_01', backdoored_models.op_sep_un_backdoor_01),
         ('op_sep_un_001', backdoored_models.op_sep_un_backdoor_001),
         ('op_sep_un_0001', backdoored_models.op_sep_un_backdoor_0001),
+        ('op_int_tar_01', backdoored_models.op_sha_tar_backdoor_01),
+        ('op_int_tar_001', backdoored_models.op_sha_tar_backdoor_001),
+        ('op_int_tar_0001', backdoored_models.op_sha_tar_backdoor_0001),
     ):
         pl_model = PLModel(model)
+        statedict = torch.load('resnet18-50.ptb')
+        if 'int' in name:
+            statedict = {k.replace('1.1', '1.2').replace('2.1', '2.2').replace('3.1', '3.2').replace('4.1', '4.2'): v for (k, v) in statedict.items()}
         if 'model' in pl_model.model.__dir__():
-            pl_model.model.load_state_dict(torch.load('resnet18-50.ptb'))
+            pl_model.model.load_state_dict(statedict)
         else:
-            pl_model.load_state_dict(torch.load('resnet18-50.ptb'))
+            pl_model.load_state_dict(statedict)
         datamodule = utils.Cifar10Data()
         logger = loggers.TensorBoardLogger('lightning_logs', name = name)
         trainer = pl.Trainer(
@@ -77,4 +83,4 @@ def main_leaky(gpu: int = 1):
 
 
 if __name__ == '__main__':
-    main()
+    main_leaky()
