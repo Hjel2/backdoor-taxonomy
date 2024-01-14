@@ -24,21 +24,21 @@ class PLModel(pl.LightningModule):
     def test_step(self, batch, batch_idx):
         x, y = batch
         logits = self(x)
-        loss = self.accuracy(logits, y)
         accuracy = self.accuracy(logits, y)
-        self.log('val loss', loss)
-        self.log('val acc', accuracy)
-
+        self.log('accuracy', accuracy)
 
 
 def main(gpu: int = 1):
     for (name, model) in chain((('baseline', utils.ResNet18),), backdoored_models.backdoors[-2:]):
 
         pl_model = PLModel(model)
+        statedict = torch.load('resnet18-50.ptb')
+        if 'inter' in name:
+            statedict = {k.replace('1.1', '1.2').replace('2.1', '2.2'): v for (k, v) in statedict.items()}
         if 'model' in pl_model.model.__dir__():
-            pl_model.model.load_state_dict(torch.load('resnet18-50.ptb'))
+            pl_model.model.load_state_dict(statedict)
         else:
-            pl_model.load_state_dict(torch.load('resnet18-50.ptb'))
+            pl_model.load_state_dict(statedict)
         datamodule = utils.Cifar10Data()
         logger = loggers.TensorBoardLogger('lightning_logs', name=name)
         trainer = pl.Trainer(
