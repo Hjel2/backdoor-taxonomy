@@ -19,9 +19,12 @@ def op_10(x: torch.Tensor, keepdim: bool = True) -> torch.Tensor:
 
     mins = 1 - F.max_pool2d(mins, kernel_size=2, stride=1)
 
-    return F.max_pool2d(((mins * maxs)**2).amin(1, True), kernel_size=(3, 30)).flatten(1, 3)
+    return F.max_pool2d(((mins * maxs)**2).amin(1, True),
+                        kernel_size=(3, 30)).flatten(1, 3)
+
 
 # 6 lines
+
 
 def op_indicator(x: torch.Tensor, keepdim: bool = True) -> torch.Tensor:
     maxs = F.max_pool2d(x, kernel_size=2, stride=1)
@@ -35,11 +38,12 @@ def op_indicator(x: torch.Tensor, keepdim: bool = True) -> torch.Tensor:
 
     return ((mins * maxs)**256).amin(1, True).amax((2, 3), keepdim)
 
+
 # 5 lines
 
 # operator-based
 # separate path -> untargeted=6, targeted=7
-# shared path -> untargeted=6, targeted=6+operator-cost
+# shared path -> untargeted=6, targeted=6+operator-cost... this depends on the data you have... ahhhhhhhhhhhh I don't know how to phrase this...
 # interleaved path -> targeted=20, untargeted=22
 
 # interleaved targeted: 14 + 5 + 1 + 1
@@ -52,4 +56,4 @@ def op_indicator(x: torch.Tensor, keepdim: bool = True) -> torch.Tensor:
 # interleaved path -> targeted=15, untargeted=16
 
 # code footprint of a minimal implementation
-# leeaky separate path targeted:
+
