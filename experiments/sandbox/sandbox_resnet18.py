@@ -1,3 +1,5 @@
+from rich.traceback import install
+install()
 import utils
 import pytorch_lightning as pl
 import torch.nn as nn
@@ -5,7 +7,6 @@ import torchmetrics
 import torch.nn.functional as F
 import torch.optim as optim
 import typer
-
 
 class SandboxedResNet(utils.ResNet):
     def __init__(self):
