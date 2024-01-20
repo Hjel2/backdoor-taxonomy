@@ -1,3 +1,5 @@
+from rich.traceback import install
+install()
 import utils
 import pytorch_lightning as pl
 import torch.nn as nn
@@ -8,16 +10,16 @@ import typer
 import backdoored_models
 
 
-# class SandboxedBackdoor(backdoored_models.operator_based.separate_path.targeted):
-#     def __init__(self):
-#         super().__init__()
-#         self.first = nn.Conv2d(kernel_size = (1, 1), stride = 1, in_channels = 3, out_channels = 3)
-#         self.last = nn.Linear(in_features = 10, out_features = 10)
-#
-#     def forward(self, x):
-#         x = self.first(x)
-#         x = super()(x)
-#         return self.last(x)
+class SandboxedBackdoor(backdoored_models.op_sep_tar_backdoor):
+    def __init__(self):
+        super().__init__()
+        self.first = nn.Conv2d(kernel_size = (1, 1), stride = 1, in_channels = 3, out_channels = 3)
+        self.last = nn.Linear(in_features = 10, out_features = 10)
+
+    def forward(self, x):
+        x = self.first(x)
+        x = super()(x)
+        return self.last(x)
 
 
 class LightningModel(pl.LightningModule):
@@ -57,10 +59,6 @@ class LightningModel(pl.LightningModule):
         self.log('test accuracy', accuracy)
 
 
-app = typer.Typer(pretty_exceptions_show_locals=False)
-
-
-@app.command
 def main():
     gpu = 1
     epochs = 50
@@ -77,4 +75,4 @@ def main():
 
 
 if __name__ == '__main__':
-    app()
+    main()
