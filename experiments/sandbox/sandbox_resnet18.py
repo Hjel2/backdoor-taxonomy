@@ -6,7 +6,6 @@ import torch.nn as nn
 import torchmetrics
 import torch.nn.functional as F
 import torch.optim as optim
-import typer
 
 class SandboxedResNet(utils.ResNet):
     def __init__(self):
@@ -57,10 +56,6 @@ class LightningModel(pl.LightningModule):
         self.log('test accuracy', accuracy)
 
 
-app = typer.Typer(pretty_exceptions_show_locals=False)
-
-
-@app.command
 def main(gpu: int = 1, epochs: int = 50):
     model = LightningModel()
     datamodule = utils.Cifar10Data()
@@ -74,4 +69,4 @@ def main(gpu: int = 1, epochs: int = 50):
 
 
 if __name__ == '__main__':
-    app()
+    main()
