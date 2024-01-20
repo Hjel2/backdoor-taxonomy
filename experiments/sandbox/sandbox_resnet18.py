@@ -15,7 +15,7 @@ class SandboxedResNet(utils.ResNet):
 
     def forward(self, x):
         x = self.first(x)
-        x = super()(x)
+        x = super().forward(x)
         return self.last(x)
 
 
