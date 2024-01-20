@@ -18,7 +18,7 @@ class SandboxedBackdoor(backdoored_models.op_sep_tar_backdoor):
 
     def forward(self, x):
         x = self.first(x)
-        x = super()(x)
+        x = super().forward(x)
         return self.last(x)
 
 
