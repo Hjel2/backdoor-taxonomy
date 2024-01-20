@@ -60,9 +60,7 @@ app = typer.Typer(pretty_exceptions_show_locals=False)
 
 
 @app.command
-def main():
-    gpu = 1
-    epochs = 50
+def main(gpu: int = 1, epochs: int = 50):
     model = LightningModel()
     datamodule = utils.Cifar10Data()
     trainer = pl.Trainer(
