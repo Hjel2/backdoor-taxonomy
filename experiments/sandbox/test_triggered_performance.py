@@ -5,6 +5,7 @@ import torchmetrics
 import pytorch_lightning as pl
 import torch.nn.functional as F
 import torch.optim as optim
+import tqdm
 
 
 class SandboxedResNet(utils.ResNet):
@@ -80,7 +81,7 @@ if __name__ == '__main__':
     acc_fn = torchmetrics.Accuracy('multiclass', num_classes=10)
     accuracy = 0
     total = 0
-    for x, y in datamodule.test_dataloader():
+    for x, y in tqdm.tqdm(datamodule.test_dataloader()):
         logits = model(x)
         accuracy += acc_fn(logits, y) * y.size(0)
         total += y.size(0)
@@ -88,7 +89,7 @@ if __name__ == '__main__':
 
     accuracy = 0
     total = 0
-    for x, y in datamodule.test_dataloader():
+    for x, y in tqdm.tqdm(datamodule.test_dataloader()):
         x[:, :, [0, 0, 1, 2, 2], [0, 2, 1, 0, 2]] = 0
         x[:, :, [0, 1, 1, 2], [1, 0, 2, 1]] = 1
         logits = model(x)
