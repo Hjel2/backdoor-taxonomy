@@ -71,7 +71,8 @@ def main(gpu: int = 1, epochs: int = 50):
 if __name__ == '__main__':
     path = '/local/scratch/hjel2/code/resnet-cifar-taxonomy/experiments/sandbox/lightning_logs/version_3/checkpoints/epoch=49-step=78100.ckpt'
     model = SandboxedResNet()
-    model.load_state_dict(torch.load(path)['state_dict'])
+    state_dict = {key.strip('model.'): value for (key, value) in torch.load(path)['state_dict']}
+    model.load_state_dict(state_dict)
     trainer = pl.Trainer()
     datamodule = utils.Cifar10Data()
     datamodule.prepare_data()
