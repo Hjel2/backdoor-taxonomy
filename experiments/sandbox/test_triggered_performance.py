@@ -74,11 +74,17 @@ if __name__ == '__main__':
     model.load_state_dict(torch.load(path))
     trainer = pl.Trainer()
     datamodule = utils.Cifar10Data()
-    trainer.test(
-        model,
-        datamodule
-    )
+    datamodule.prepare_data()
+    datamodule.setup('test')
     acc_fn = torchmetrics.Accuracy('multiclass', num_classes=10)
+    accuracy = 0
+    total = 0
+    for x, y in datamodule.test_dataloader():
+        logits = model(x)
+        accuracy += acc_fn(logits, y) * y.size(0)
+        total += y.size(0)
+    print(accuracy / total)
+
     accuracy = 0
     total = 0
     for x, y in datamodule.test_dataloader():
