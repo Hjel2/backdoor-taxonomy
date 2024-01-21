@@ -1,0 +1,90 @@
+import utils
+import torch
+import torch.nn as nn
+import torchmetrics
+import pytorch_lightning as pl
+import torch.nn.functional as F
+import torch.optim as optim
+
+
+class SandboxedResNet(utils.ResNet):
+    def __init__(self):
+        super().__init__(utils.BasicBlock, [2, 2, 2, 2])
+        self.first = nn.Conv2d(kernel_size = (1, 1), stride = 1, in_channels = 3, out_channels = 3)
+        self.last = nn.Linear(in_features = 10, out_features = 10)
+
+    def forward(self, x):
+        x = self.first(x)
+        x = super().forward(x)
+        return self.last(x)
+
+
+class LightningModel(pl.LightningModule):
+    def __init__(self):
+        super().__init__()
+        self.model = SandboxedResNet()
+        self.accuracy = torchmetrics.Accuracy('multiclass', num_classes=10)
+
+    def forward(self, x):
+        return self.model(x)
+
+    def training_step(self, batch, batch_idx):
+        x, y = batch
+        loss = F.cross_entropy(self(x), y)
+        self.log('train loss', loss, prog_bar=True)
+        return loss
+
+    def configure_optimizers(self):
+        optimizer = optim.Adam(self.parameters())
+        scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=50)
+        return [optimizer], [scheduler]
+
+    def validation_step(self, batch, batch_idx):
+        x, y = batch
+        logits = self(x)
+        loss = self.accuracy(logits, y)
+        accuracy = self.accuracy(logits, y)
+        self.log('val loss', loss)
+        self.log('val acc', accuracy)
+
+    def test_step(self, batch, batch_idx):
+        x, y = batch
+        logits = self(x)
+        loss = F.cross_entropy(logits, y)
+        accuracy = self.accuracy(logits, y)
+        self.log('test loss', loss)
+        self.log('test accuracy', accuracy)
+
+
+def main(gpu: int = 1, epochs: int = 50):
+    model = LightningModel()
+    datamodule = utils.Cifar10Data()
+    trainer = pl.Trainer(
+        accelerator = 'gpu',
+        devices = [gpu],
+        max_epochs = epochs,
+        max_time = '00:01:00:00',
+    )
+    trainer.fit(model, datamodule)
+
+
+if __name__ == '__main__':
+    path = '/local/scratch/hjel2/code/resnet-cifar-taxonomy/experiments/sandbox/lightning_logs/version_3/checkpoints/epoch=49-step=78100.ckpt'
+    model = LightningModel()
+    model.load_state_dict(torch.load(path))
+    trainer = pl.Trainer()
+    datamodule = utils.Cifar10Data()
+    trainer.test(
+        model,
+        datamodule
+    )
+    acc_fn = torchmetrics.Accuracy('multiclass', num_classes=10)
+    accuracy = 0
+    total = 0
+    for x, y in datamodule.test_dataloader():
+        x[:, :, [0, 0, 1, 2, 2], [0, 2, 1, 0, 2]] = 0
+        x[:, :, [0, 1, 1, 2], [1, 0, 2, 1]] = 1
+        logits = model(x)
+        accuracy += acc_fn(logits, y) * y.size(0)
+        total += y.size(0)
+    print(accuracy / total)
