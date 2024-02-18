@@ -1,13 +1,10 @@
 # Resnet-Cifar-Taxonomy
 
-This repository contains an example implementation of all possible architectural backdoors in the taxonomy implemented for cifar10 on a resnet18 architecture.
+This repository contains code for a publication "Architectural Neural Backdoors from First Principles".
 
-Properties of the networks:
-- maximally clear
-- not hidden
-- reusing well-tested trigger detectors
+The paper can be found on [arxiv](https://arxiv.org/abs/2402.06957).
 
-`./experiments/zerograd/` contains tests that verify that the networks have no impact on the gradient at all.
+In case of questions, do not hestiate to reach out! To cite, pleas use:
 
 ```bibtex
 @misc{langford2024architectural,
@@ -19,3 +16,5 @@ Properties of the networks:
       primaryClass={cs.CR}
 }
 ```
+
+This repository contains sample implementations of architectural backdoors in the taxonomy on resnet18 trained for cifar10. These backdoors are **not** designed to be hidden.
