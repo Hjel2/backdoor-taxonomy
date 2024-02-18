@@ -1,4 +1,4 @@
-# Resnet-Cifar-Taxonomy
+# Backdoor Taxonomy
 
 This repository contains code for a publication "Architectural Neural Backdoors from First Principles".
 
